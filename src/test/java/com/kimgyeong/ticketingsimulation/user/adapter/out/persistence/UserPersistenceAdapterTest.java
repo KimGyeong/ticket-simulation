@@ -28,7 +28,7 @@ class UserPersistenceAdapterTest {
 
 	@Test
 	void save() {
-		User user = new User(null, "test", "test@test.com", "test", "12345678901", Set.of(Role.ROLE_USER),
+		User user = new User(null, "test", "test@test.com", "test1234!", "12345678901", Set.of(Role.ROLE_USER),
 			LocalDateTime.now());
 		UserEntity entity = UserEntityMapper.toEntity(user);
 		given(repository.save(any(UserEntity.class))).willReturn(entity);
@@ -41,7 +41,8 @@ class UserPersistenceAdapterTest {
 	@Test
 	void findByEmail_whenFindByEmailExists() {
 		String email = "test@test.com";
-		UserEntity entity = new UserEntity(1L, "test", "test@test.com", "test", "12345678901", Set.of(Role.ROLE_USER),
+		UserEntity entity = new UserEntity(1L, "test", "test@test.com", "test1234!", "12345678901",
+			Set.of(Role.ROLE_USER),
 			LocalDateTime.now());
 		given(repository.findByEmail(email)).willReturn(Optional.of(entity));
 
@@ -64,7 +65,8 @@ class UserPersistenceAdapterTest {
 	@Test
 	void findById_whenFindByIdExists() {
 		long id = 1L;
-		UserEntity entity = new UserEntity(id, "test", "test@test.com", "test", "12345678901", Set.of(Role.ROLE_USER),
+		UserEntity entity = new UserEntity(id, "test", "test@test.com", "test1234!", "12345678901",
+			Set.of(Role.ROLE_USER),
 			LocalDateTime.now());
 		given(repository.findById(id)).willReturn(Optional.of(entity));
 
