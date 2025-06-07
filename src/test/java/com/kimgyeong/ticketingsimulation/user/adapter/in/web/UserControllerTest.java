@@ -1,11 +1,13 @@
 package com.kimgyeong.ticketingsimulation.user.adapter.in.web;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -17,13 +19,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.kimgyeong.ticketingsimulation.global.controller.AbstractControllerTest;
+import com.kimgyeong.ticketingsimulation.global.security.annotation.WithMockCustomUser;
 import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.RegisterUserRequest;
+import com.kimgyeong.ticketingsimulation.user.application.port.in.ReadUserUseCase;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.RegisterUserUseCase;
+import com.kimgyeong.ticketingsimulation.user.domain.model.Role;
+import com.kimgyeong.ticketingsimulation.user.domain.model.User;
 
 @WebMvcTest(controllers = UserController.class)
 class UserControllerTest extends AbstractControllerTest {
 	@MockitoBean
 	RegisterUserUseCase registerUserUseCase;
+
+	@MockitoBean
+	ReadUserUseCase readUserUseCase;
 
 	private static Stream<Arguments> invalidRegisterRequests() {
 		return Stream.of(
@@ -68,4 +77,21 @@ class UserControllerTest extends AbstractControllerTest {
 			.andExpect(jsonPath("$.message").exists());
 	}
 
+	@Test
+	@WithMockCustomUser(email = "hong@test.com")
+	void getUser() throws Exception {
+		User user = new User(1L, "홍길동", "hong@test.com", "encoded-password", "01012345678", Set.of(Role.ROLE_USER),
+			LocalDateTime.now());
+
+		given(readUserUseCase.read("hong@test.com"))
+			.willReturn(user);
+
+		mockMvc.perform(get("/users/me")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(1L))
+			.andExpect(jsonPath("$.name").value("홍길동"))
+			.andExpect(jsonPath("$.email").value("hong@test.com"))
+			.andExpect(jsonPath("$.phoneNumber").value("01012345678"));
+	}
 }
