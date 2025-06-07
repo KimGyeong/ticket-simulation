@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.kimgyeong.ticketingsimulation.global.config.security.JwtTokenProvider;
 import com.kimgyeong.ticketingsimulation.global.exception.InvalidCredentialsException;
 import com.kimgyeong.ticketingsimulation.global.exception.UserNotFoundException;
-import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.LoginResponse;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.LoginUserUseCase;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.command.LoginUserCommand;
 import com.kimgyeong.ticketingsimulation.user.application.port.out.UserRepositoryPort;
@@ -25,7 +24,7 @@ public class LoginUserUseCaseImpl implements LoginUserUseCase {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
-	public LoginResponse login(LoginUserCommand command) {
+	public String login(LoginUserCommand command) {
 		User user = userRepositoryPort.findByEmail(command.email())
 			.orElseThrow(UserNotFoundException::new);
 
@@ -38,8 +37,6 @@ public class LoginUserUseCaseImpl implements LoginUserUseCase {
 			.map(Enum::name)
 			.toList();
 
-		String token = jwtTokenProvider.generateToken(String.valueOf(user.id()), roles);
-
-		return new LoginResponse(token);
+		return jwtTokenProvider.generateToken(String.valueOf(user.id()), roles);
 	}
 }

@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.kimgyeong.ticketingsimulation.global.config.security.JwtTokenProvider;
 import com.kimgyeong.ticketingsimulation.global.exception.InvalidCredentialsException;
 import com.kimgyeong.ticketingsimulation.global.exception.UserNotFoundException;
-import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.LoginResponse;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.command.LoginUserCommand;
 import com.kimgyeong.ticketingsimulation.user.application.port.out.UserRepositoryPort;
 import com.kimgyeong.ticketingsimulation.user.domain.model.Role;
@@ -58,10 +57,10 @@ class LoginUserUseCaseImplTest {
 		LoginUserCommand command = new LoginUserCommand(email, rawPassword);
 
 		// when
-		LoginResponse response = loginUserUseCase.login(command);
+		String result = loginUserUseCase.login(command);
 
 		// then
-		assertThat(response.token()).isEqualTo("jwt.token.here");
+		assertThat(result).isEqualTo("jwt.token.here");
 	}
 
 	@Test
