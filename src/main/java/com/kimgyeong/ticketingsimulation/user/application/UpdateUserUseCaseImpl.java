@@ -8,10 +8,11 @@ import com.kimgyeong.ticketingsimulation.user.application.port.in.command.Update
 import com.kimgyeong.ticketingsimulation.user.application.port.out.UserRepositoryPort;
 import com.kimgyeong.ticketingsimulation.user.domain.model.User;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 public class UpdateUserUseCaseImpl implements UpdateUserUseCase {
 	private final UserRepositoryPort userRepositoryPort;
 
