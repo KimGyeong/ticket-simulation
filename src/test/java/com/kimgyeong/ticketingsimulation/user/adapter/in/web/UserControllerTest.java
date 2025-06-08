@@ -21,8 +21,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import com.kimgyeong.ticketingsimulation.global.controller.AbstractControllerTest;
 import com.kimgyeong.ticketingsimulation.global.security.annotation.WithMockCustomUser;
 import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.RegisterUserRequest;
+import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.UpdateUserRequest;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.ReadUserUseCase;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.RegisterUserUseCase;
+import com.kimgyeong.ticketingsimulation.user.application.port.in.UpdateUserUseCase;
 import com.kimgyeong.ticketingsimulation.user.domain.model.Role;
 import com.kimgyeong.ticketingsimulation.user.domain.model.User;
 
@@ -30,6 +32,9 @@ import com.kimgyeong.ticketingsimulation.user.domain.model.User;
 class UserControllerTest extends AbstractControllerTest {
 	@MockitoBean
 	RegisterUserUseCase registerUserUseCase;
+
+	@MockitoBean
+	UpdateUserUseCase updateUserUseCase;
 
 	@MockitoBean
 	ReadUserUseCase readUserUseCase;
@@ -93,5 +98,27 @@ class UserControllerTest extends AbstractControllerTest {
 			.andExpect(jsonPath("$.name").value("홍길동"))
 			.andExpect(jsonPath("$.email").value("hong@test.com"))
 			.andExpect(jsonPath("$.phoneNumber").value("01012345678"));
+	}
+
+	@Test
+	@WithMockCustomUser(email = "hong@test.com")
+	void updateUser() throws Exception {
+		UpdateUserRequest updateRequest = new UpdateUserRequest("테스트", "01099999999");
+		User updatedUser = new User(1L, "테스트", "hong@test.com", "encoded-password", "01099999999",
+			Set.of(Role.ROLE_USER),
+			LocalDateTime.now());
+
+		given(updateUserUseCase.update("hong@test.com", updateRequest.toCommand()))
+			.willReturn(updatedUser);
+
+		mockMvc.perform(patch("/users/me")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateRequest)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(1L))
+			.andExpect(jsonPath("$.name").value("테스트"))
+			.andExpect(jsonPath("$.email").value("hong@test.com"))
+			.andExpect(jsonPath("$.phoneNumber").value("01099999999"));
 	}
 }

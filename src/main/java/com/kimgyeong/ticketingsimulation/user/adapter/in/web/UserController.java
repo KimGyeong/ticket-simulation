@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kimgyeong.ticketingsimulation.global.exception.UnauthenticatedException;
 import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.RegisterUserRequest;
+import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.UpdateUserRequest;
 import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.UserResponse;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.ReadUserUseCase;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.RegisterUserUseCase;
+import com.kimgyeong.ticketingsimulation.user.application.port.in.UpdateUserUseCase;
 import com.kimgyeong.ticketingsimulation.user.domain.model.User;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final RegisterUserUseCase registerUserUseCase;
 	private final ReadUserUseCase readUserUseCase;
+	private final UpdateUserUseCase updateUserUseCase;
 
 	@Operation(summary = "회원가입", description = "새로운 회원을 등록합니다.")
 	@ApiResponses(value = {
@@ -65,4 +69,25 @@ public class UserController {
 
 		return ResponseEntity.ok(UserResponse.from(user));
 	}
+
+	@PatchMapping("/me")
+	@Operation(summary = "회원 정보 수정", description = "현재 로그인한 사용자의 이름과 전화번호를 수정합니다.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "수정 성공"),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청"),
+		@ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+	})
+	public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UpdateUserRequest request) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication == null || !authentication.isAuthenticated()) {
+			throw new UnauthenticatedException();
+		}
+
+		String email = authentication.getName();
+		User updatedUser = updateUserUseCase.update(email, request.toCommand());
+
+		return ResponseEntity.ok(UserResponse.from(updatedUser));
+	}
+
 }
