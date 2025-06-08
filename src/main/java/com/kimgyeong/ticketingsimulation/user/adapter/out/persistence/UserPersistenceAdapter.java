@@ -42,7 +42,7 @@ public class UserPersistenceAdapter implements UserRepositoryPort {
 	}
 
 	@Override
-	public void deleteById(Long id) {
-		userRepository.deleteById(id);
+	public void deleteByEmail(String email) {
+		userRepository.deleteByEmail(email);
 	}
 }

@@ -87,11 +87,11 @@ class UserPersistenceAdapterTest {
 	}
 
 	@Test
-	void deleteById() {
-		Long id = 1L;
+	void deleteByEmail() {
+		String email = "test@test.com";
 
-		adapter.deleteById(id);
+		adapter.deleteByEmail(email);
 
-		verify(repository).deleteById(id);
+		verify(repository).deleteByEmail(email);
 	}
 }
