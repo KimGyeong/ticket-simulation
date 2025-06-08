@@ -22,6 +22,7 @@ import com.kimgyeong.ticketingsimulation.global.controller.AbstractControllerTes
 import com.kimgyeong.ticketingsimulation.global.security.annotation.WithMockCustomUser;
 import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.RegisterUserRequest;
 import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.UpdateUserRequest;
+import com.kimgyeong.ticketingsimulation.user.application.port.in.DeleteUserUseCase;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.ReadUserUseCase;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.RegisterUserUseCase;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.UpdateUserUseCase;
@@ -38,6 +39,9 @@ class UserControllerTest extends AbstractControllerTest {
 
 	@MockitoBean
 	ReadUserUseCase readUserUseCase;
+
+	@MockitoBean
+	DeleteUserUseCase deleteUserUseCase;
 
 	private static Stream<Arguments> invalidRegisterRequests() {
 		return Stream.of(
@@ -120,5 +124,14 @@ class UserControllerTest extends AbstractControllerTest {
 			.andExpect(jsonPath("$.name").value("테스트"))
 			.andExpect(jsonPath("$.email").value("hong@test.com"))
 			.andExpect(jsonPath("$.phoneNumber").value("01099999999"));
+	}
+
+	@Test
+	@WithMockCustomUser(email = "hong@test.com")
+	void deleteUser() throws Exception {
+		willDoNothing().given(deleteUserUseCase).delete("hong@test.com");
+
+		mockMvc.perform(delete("/users/me"))
+			.andExpect(status().isNoContent());
 	}
 }
