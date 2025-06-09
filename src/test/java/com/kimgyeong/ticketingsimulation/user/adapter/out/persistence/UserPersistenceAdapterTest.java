@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.kimgyeong.ticketingsimulation.user.adapter.out.entity.UserEntity;
+import com.kimgyeong.ticketingsimulation.user.adapter.out.persistence.entity.UserEntity;
 import com.kimgyeong.ticketingsimulation.user.adapter.out.persistence.mapper.UserEntityMapper;
 import com.kimgyeong.ticketingsimulation.user.domain.model.Role;
 import com.kimgyeong.ticketingsimulation.user.domain.model.User;

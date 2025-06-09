@@ -1,6 +1,6 @@
 package com.kimgyeong.ticketingsimulation.user.adapter.out.persistence.mapper;
 
-import com.kimgyeong.ticketingsimulation.user.adapter.out.entity.UserEntity;
+import com.kimgyeong.ticketingsimulation.user.adapter.out.persistence.entity.UserEntity;
 import com.kimgyeong.ticketingsimulation.user.domain.model.User;
 
 public class UserEntityMapper {

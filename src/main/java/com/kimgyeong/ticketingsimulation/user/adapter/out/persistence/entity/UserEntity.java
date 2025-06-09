@@ -1,4 +1,4 @@
-package com.kimgyeong.ticketingsimulation.user.adapter.out.entity;
+package com.kimgyeong.ticketingsimulation.user.adapter.out.persistence.entity;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

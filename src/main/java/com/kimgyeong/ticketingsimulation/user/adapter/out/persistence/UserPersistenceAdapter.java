@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import com.kimgyeong.ticketingsimulation.user.adapter.out.entity.UserEntity;
+import com.kimgyeong.ticketingsimulation.user.adapter.out.persistence.entity.UserEntity;
 import com.kimgyeong.ticketingsimulation.user.adapter.out.persistence.mapper.UserEntityMapper;
 import com.kimgyeong.ticketingsimulation.user.application.port.out.UserRepositoryPort;
 import com.kimgyeong.ticketingsimulation.user.domain.model.User;
