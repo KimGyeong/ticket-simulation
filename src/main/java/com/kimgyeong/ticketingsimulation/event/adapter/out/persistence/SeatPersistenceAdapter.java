@@ -1,0 +1,28 @@
+package com.kimgyeong.ticketingsimulation.event.adapter.out.persistence;
+
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import com.kimgyeong.ticketingsimulation.event.adapter.out.persistence.entity.SeatEntity;
+import com.kimgyeong.ticketingsimulation.event.adapter.out.persistence.mapper.SeatEntityMapper;
+import com.kimgyeong.ticketingsimulation.event.application.port.out.SeatRepositoryPort;
+import com.kimgyeong.ticketingsimulation.event.domain.model.Seat;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(access = AccessLevel.PUBLIC)
+@Component
+public class SeatPersistenceAdapter implements SeatRepositoryPort {
+	private final JpaSeatRepository repository;
+
+	@Override
+	public List<Seat> findAllByEventId(Long eventId) {
+		List<SeatEntity> allByEventId = repository.findAllByEventId(eventId);
+
+		return allByEventId.stream()
+			.map(SeatEntityMapper::toDomain)
+			.toList();
+	}
+}

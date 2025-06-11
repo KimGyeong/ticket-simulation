@@ -7,6 +7,9 @@ public enum ErrorCode {
 	USER_NOT_FOUND("E002", "사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	INVALID_CREDENTIALS("E003", "비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
 	UNAUTHENTICATED("E004", "접근할 수 없는 데이터입니다.", HttpStatus.UNAUTHORIZED),
+	SEAT_ALREADY_HELD("E005", "이미 선점된 좌석입니다.", HttpStatus.BAD_REQUEST),
+	SEAT_ALREADY_BOOKED("E006", "이미 예약된 좌석입니다.", HttpStatus.BAD_REQUEST),
+	INVALID_SEAT_STATUS("E007", "임시 점유 없이 예매할 수 없습니다.", HttpStatus.BAD_REQUEST),
 	INTERNAL_SERVER_ERROR("E999", "서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
 	private final String code;
