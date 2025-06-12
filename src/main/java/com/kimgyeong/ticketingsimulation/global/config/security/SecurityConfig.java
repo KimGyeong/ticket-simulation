@@ -21,9 +21,9 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers(HttpMethod.POST, "/users").permitAll()
-				.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-				.requestMatchers(HttpMethod.GET, "/users/me").hasRole("USER")
+				.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/users/me").hasRole("USER")
 				.anyRequest().authenticated())
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

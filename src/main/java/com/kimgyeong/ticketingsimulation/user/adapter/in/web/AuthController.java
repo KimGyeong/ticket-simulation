@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 @Tag(name = "Auth API", description = "인증 관련 API")
 public class AuthController {

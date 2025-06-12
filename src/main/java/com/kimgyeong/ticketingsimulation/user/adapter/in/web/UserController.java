@@ -32,7 +32,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 @Tag(name = "User API", description = "회원 관련 API")
 public class UserController {

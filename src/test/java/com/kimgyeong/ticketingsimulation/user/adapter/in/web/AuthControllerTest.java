@@ -29,7 +29,7 @@ class AuthControllerTest extends AbstractControllerTest {
 		given(loginUserUseCase.login(request.toCommand()))
 			.willReturn(token);
 
-		mockMvc.perform(post("/auth/login")
+		mockMvc.perform(post("/api/auth/login")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
@@ -41,7 +41,7 @@ class AuthControllerTest extends AbstractControllerTest {
 	void login_InvalidEmail() throws Exception {
 		LoginUserRequest request = new LoginUserRequest("invalid-email", "password123!");
 
-		mockMvc.perform(post("/auth/login")
+		mockMvc.perform(post("/api/auth/login")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
@@ -54,7 +54,7 @@ class AuthControllerTest extends AbstractControllerTest {
 	void login_InvalidPassword() throws Exception {
 		LoginUserRequest request = new LoginUserRequest("test@test.com", "");
 
-		mockMvc.perform(post("/auth/login")
+		mockMvc.perform(post("/api/auth/login")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
@@ -70,12 +70,12 @@ class AuthControllerTest extends AbstractControllerTest {
 		given(loginUserUseCase.login(request.toCommand()))
 			.willThrow(new UserNotFoundException());
 
-		mockMvc.perform(post("/auth/login")
+		mockMvc.perform(post("/api/auth/login")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isNotFound())
-			.andExpect(jsonPath("$.code").value("USER_NOT_FOUND"))
+			.andExpect(jsonPath("$.code").value("E002"))
 			.andExpect(jsonPath("$.message").exists());
 	}
 
@@ -86,12 +86,12 @@ class AuthControllerTest extends AbstractControllerTest {
 		given(loginUserUseCase.login(request.toCommand()))
 			.willThrow(new InvalidCredentialsException());
 
-		mockMvc.perform(post("/auth/login")
+		mockMvc.perform(post("/api/auth/login")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isUnauthorized())
-			.andExpect(jsonPath("$.code").value("UNAUTHORIZED"))
+			.andExpect(jsonPath("$.code").value("E003"))
 			.andExpect(jsonPath("$.message").exists());
 	}
 }

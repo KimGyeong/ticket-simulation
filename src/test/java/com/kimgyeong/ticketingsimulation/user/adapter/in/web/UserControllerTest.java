@@ -59,7 +59,7 @@ class UserControllerTest extends AbstractControllerTest {
 
 		when(registerUserUseCase.register(any())).thenReturn(1L);
 
-		mockMvc.perform(post("/users")
+		mockMvc.perform(post("/api/users")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(registerUserRequest)))
@@ -77,7 +77,7 @@ class UserControllerTest extends AbstractControllerTest {
 			field.equals("phoneNumber") ? value : "01012345678"
 		);
 
-		mockMvc.perform(post("/users")
+		mockMvc.perform(post("/api/users")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
@@ -95,7 +95,7 @@ class UserControllerTest extends AbstractControllerTest {
 		given(readUserUseCase.read("hong@test.com"))
 			.willReturn(user);
 
-		mockMvc.perform(get("/users/me")
+		mockMvc.perform(get("/api/users/me")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.id").value(1L))
@@ -115,7 +115,7 @@ class UserControllerTest extends AbstractControllerTest {
 		given(updateUserUseCase.update("hong@test.com", updateRequest.toCommand()))
 			.willReturn(updatedUser);
 
-		mockMvc.perform(patch("/users/me")
+		mockMvc.perform(patch("/api/users/me")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateRequest)))
@@ -131,7 +131,7 @@ class UserControllerTest extends AbstractControllerTest {
 	void deleteUser() throws Exception {
 		willDoNothing().given(deleteUserUseCase).delete("hong@test.com");
 
-		mockMvc.perform(delete("/users/me"))
+		mockMvc.perform(delete("/api/users/me"))
 			.andExpect(status().isNoContent());
 	}
 }
