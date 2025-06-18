@@ -25,4 +25,11 @@ public class SeatPersistenceAdapter implements SeatRepositoryPort {
 			.map(SeatEntityMapper::toDomain)
 			.toList();
 	}
+
+	@Override
+	public void save(Seat seat) {
+		SeatEntity entity = SeatEntityMapper.toEntity(seat);
+
+		repository.save(entity);
+	}
 }

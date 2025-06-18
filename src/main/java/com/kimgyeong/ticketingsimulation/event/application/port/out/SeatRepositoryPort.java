@@ -6,4 +6,6 @@ import com.kimgyeong.ticketingsimulation.event.domain.model.Seat;
 
 public interface SeatRepositoryPort {
 	List<Seat> findAllByEventId(Long eventId);
+
+	void save(Seat seat);
 }
