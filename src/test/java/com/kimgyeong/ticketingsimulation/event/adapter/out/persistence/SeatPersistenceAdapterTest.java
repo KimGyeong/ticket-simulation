@@ -28,7 +28,7 @@ class SeatPersistenceAdapterTest {
 
 	@Test
 	void findAllByEventId() {
-		SeatEntity seatEntity = new SeatEntity(1L, 1L, SeatStatus.AVAILABLE, 1, LocalDateTime.now());
+		SeatEntity seatEntity = new SeatEntity(1L, 1L, SeatStatus.AVAILABLE, 1, LocalDateTime.now(), 1L);
 		List<SeatEntity> entities = List.of(seatEntity);
 		given(repository.findAllByEventId(anyLong())).willReturn(entities);
 
@@ -40,7 +40,7 @@ class SeatPersistenceAdapterTest {
 
 	@Test
 	void save() {
-		Seat seat = new Seat(1L, 1L, SeatStatus.AVAILABLE, 1, LocalDateTime.now());
+		Seat seat = new Seat(1L, 1L, SeatStatus.AVAILABLE, 1, LocalDateTime.now(), 1L);
 		SeatEntity entity = SeatEntityMapper.toEntity(seat);
 
 		given(repository.save(any(SeatEntity.class))).willReturn(entity);

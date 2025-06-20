@@ -27,7 +27,7 @@ class ReadSeatUseCaseImplTest {
 	@Test
 	void getSeatsByEventId() {
 		Long eventId = 1L;
-		Seat seat = new Seat(1L, eventId, SeatStatus.AVAILABLE, 1, null);
+		Seat seat = new Seat(1L, eventId, SeatStatus.AVAILABLE, 1, null, null);
 		given(seatRepositoryPort.findAllByEventId(eventId)).willReturn(List.of(seat));
 
 		List<Seat> result = readSeatUseCase.getSeatsByEventId(eventId);

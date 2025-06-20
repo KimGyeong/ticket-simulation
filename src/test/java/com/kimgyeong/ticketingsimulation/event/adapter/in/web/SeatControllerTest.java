@@ -26,7 +26,7 @@ class SeatControllerTest extends AbstractControllerTest {
 	@WithMockCustomUser
 	void getSeatsByEventId() throws Exception {
 		Long eventId = 1L;
-		Seat seat = new Seat(1L, 1L, SeatStatus.AVAILABLE, 1, null);
+		Seat seat = new Seat(1L, 1L, SeatStatus.AVAILABLE, 1, null, null);
 
 		when(readSeatUseCase.getSeatsByEventId(eventId)).thenReturn(List.of(seat));
 

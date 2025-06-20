@@ -12,11 +12,11 @@ import com.kimgyeong.ticketingsimulation.global.exception.SeatAlreadyBookedExcep
 import com.kimgyeong.ticketingsimulation.global.exception.SeatAlreadyHeldException;
 
 class SeatTest {
-	Seat availableSeat = new Seat(1L, 1L, SeatStatus.AVAILABLE, 1, LocalDateTime.now());
-	Seat temporaryHoldSeat = new Seat(2L, 1L, SeatStatus.TEMPORARY_HOLD, 1, LocalDateTime.now().minusSeconds(200));
-	Seat temporaryHoldSeatNotHold = new Seat(2L, 1L, SeatStatus.TEMPORARY_HOLD, 1, null);
-	Seat temporaryHoldSeatExpired = new Seat(2L, 1L, SeatStatus.TEMPORARY_HOLD, 1, LocalDateTime.now());
-	Seat bookedSeat = new Seat(3L, 1L, SeatStatus.BOOKED, 1, LocalDateTime.now());
+	Seat availableSeat = new Seat(1L, 1L, SeatStatus.AVAILABLE, 1, LocalDateTime.now(), null);
+	Seat temporaryHoldSeat = new Seat(2L, 1L, SeatStatus.TEMPORARY_HOLD, 1, LocalDateTime.now().minusSeconds(200), 1L);
+	Seat temporaryHoldSeatNotHold = new Seat(2L, 1L, SeatStatus.TEMPORARY_HOLD, 1, null, null);
+	Seat temporaryHoldSeatExpired = new Seat(2L, 1L, SeatStatus.TEMPORARY_HOLD, 1, LocalDateTime.now(), 1L);
+	Seat bookedSeat = new Seat(3L, 1L, SeatStatus.BOOKED, 1, LocalDateTime.now(), 1L);
 
 	@Test
 	void isHoldExpired() {
@@ -45,17 +45,17 @@ class SeatTest {
 
 	@Test
 	void hold() {
-		assertThat(availableSeat.hold().status()).isEqualTo(SeatStatus.TEMPORARY_HOLD);
+		assertThat(availableSeat.hold(1L).status()).isEqualTo(SeatStatus.TEMPORARY_HOLD);
 	}
 
 	@Test
 	void hold_whenSeatTemporaryHold() {
-		assertThrows(SeatAlreadyHeldException.class, () -> temporaryHoldSeat.hold());
+		assertThrows(SeatAlreadyHeldException.class, () -> temporaryHoldSeat.hold(1L));
 	}
 
 	@Test
 	void hold_whenSeatBooked() {
-		assertThrows(SeatAlreadyBookedException.class, () -> bookedSeat.hold());
+		assertThrows(SeatAlreadyBookedException.class, () -> bookedSeat.hold(1L));
 	}
 
 	@Test

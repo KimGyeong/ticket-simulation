@@ -10,7 +10,8 @@ public class SeatEntityMapper {
 			seat.eventId(),
 			seat.status(),
 			seat.number(),
-			seat.heldAt()
+			seat.heldAt(),
+			seat.heldUserId()
 		);
 	}
 
@@ -20,7 +21,8 @@ public class SeatEntityMapper {
 			entity.getEventId(),
 			entity.getStatus(),
 			entity.getNumber(),
-			entity.getHeldAt()
+			entity.getHeldAt(),
+			entity.getHeldUserId()
 		);
 	}
 }

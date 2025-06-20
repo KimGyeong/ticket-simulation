@@ -35,4 +35,6 @@ public class SeatEntity extends BaseTimeEntity {
 	private int number;
 
 	private LocalDateTime heldAt;
+
+	private Long heldUserId;
 }
