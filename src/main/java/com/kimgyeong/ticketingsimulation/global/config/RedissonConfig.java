@@ -9,15 +9,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RedissonConfig {
-
-	@Value("${spring.redis.host}")
-	private String redisHost;
-
-	@Value("${spring.redis.port}")
-	private int redisPort;
-
 	@Bean(destroyMethod = "shutdown")
-	public RedissonClient redissonClient() {
+	public RedissonClient redissonClient(
+		@Value("${spring.redis.host}") String redisHost,
+		@Value("${spring.redis.port}") int redisPort) {
+
 		Config config = new Config();
 		config.useSingleServer()
 			.setAddress("redis://" + redisHost + ":" + redisPort);

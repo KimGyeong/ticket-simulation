@@ -6,14 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 
 import com.kimgyeong.ticketingsimulation.config.RedisTestContainerConfig;
 
 @SpringBootTest
-@ContextConfiguration(initializers = RedisTestContainerConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class RedisLockServiceTest {
+class RedisLockServiceTest extends RedisTestContainerConfig {
 
 	@Autowired
 	private RedisLockService redisLockService;
