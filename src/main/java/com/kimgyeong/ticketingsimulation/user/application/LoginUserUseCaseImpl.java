@@ -37,6 +37,6 @@ public class LoginUserUseCaseImpl implements LoginUserUseCase {
 			.map(Enum::name)
 			.toList();
 
-		return jwtTokenProvider.generateToken(String.valueOf(user.id()), roles);
+		return jwtTokenProvider.generateToken(user.id(), user.email(), roles);
 	}
 }

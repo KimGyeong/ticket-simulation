@@ -13,6 +13,8 @@ import com.kimgyeong.ticketingsimulation.global.security.factory.WithMockCustomU
 @Target({ElementType.METHOD, ElementType.TYPE})
 @WithSecurityContext(factory = WithMockCustomUserSecurityContextFactory.class)
 public @interface WithMockCustomUser {
+	long id() default 1L;
+
 	String email() default "test@test.com";
 
 	String role() default "ROLE_USER";

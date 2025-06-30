@@ -51,7 +51,7 @@ class LoginUserUseCaseImplTest {
 
 		given(userRepositoryPort.findByEmail(email)).willReturn(Optional.of(user));
 		given(passwordEncoder.matches(rawPassword, encodedPassword)).willReturn(true);
-		given(jwtTokenProvider.generateToken(String.valueOf(userId), List.of("ROLE_USER"))).willReturn(
+		given(jwtTokenProvider.generateToken(userId, email, List.of("ROLE_USER"))).willReturn(
 			"jwt.token.here");
 
 		LoginUserCommand command = new LoginUserCommand(email, rawPassword);

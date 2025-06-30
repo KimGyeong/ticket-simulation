@@ -3,8 +3,7 @@ package com.kimgyeong.ticketingsimulation.user.adapter.in.web;
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kimgyeong.ticketingsimulation.global.exception.UnauthenticatedException;
+import com.kimgyeong.ticketingsimulation.global.auth.CustomUserDetails;
 import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.RegisterUserRequest;
 import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.UpdateUserRequest;
 import com.kimgyeong.ticketingsimulation.user.adapter.in.web.dto.UserResponse;
@@ -60,14 +59,8 @@ public class UserController {
 		@ApiResponse(responseCode = "404", description = "존재하지 않는 이메일")
 	})
 	@GetMapping("/me")
-	public ResponseEntity<UserResponse> getUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		if (authentication == null || !authentication.isAuthenticated()) {
-			throw new UnauthenticatedException();
-		}
-
-		String email = authentication.getName();
+	public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		String email = userDetails.getUsername();
 		User user = readUserUseCase.read(email);
 
 		return ResponseEntity.ok(UserResponse.from(user));
@@ -80,14 +73,9 @@ public class UserController {
 		@ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
 	})
 	@PatchMapping("/me")
-	public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UpdateUserRequest request) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		if (authentication == null || !authentication.isAuthenticated()) {
-			throw new UnauthenticatedException();
-		}
-
-		String email = authentication.getName();
+	public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UpdateUserRequest request,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		String email = userDetails.getUsername();
 		User updatedUser = updateUserUseCase.update(email, request.toCommand());
 
 		return ResponseEntity.ok(UserResponse.from(updatedUser));
@@ -100,14 +88,8 @@ public class UserController {
 		@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자")
 	})
 	@DeleteMapping("/me")
-	public ResponseEntity<Void> deleteUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		if (authentication == null || !authentication.isAuthenticated()) {
-			throw new UnauthenticatedException();
-		}
-
-		String email = authentication.getName();
+	public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		String email = userDetails.getUsername();
 		deleteUserUseCase.delete(email);
 
 		return ResponseEntity.noContent().build();

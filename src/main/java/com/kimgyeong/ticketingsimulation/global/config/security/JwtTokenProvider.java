@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -21,9 +22,10 @@ public class JwtTokenProvider {
 		this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 	}
 
-	public String generateToken(String subject, List<String> roles) {
+	public String generateToken(Long userId, String email, List<String> roles) {
 		return Jwts.builder()
-			.subject(subject)
+			.subject(email)
+			.claim("userId", userId)
 			.claim(SecurityConstants.CLAIM_ROLES, roles)
 			.issuedAt(new Date())
 			.expiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
@@ -43,12 +45,34 @@ public class JwtTokenProvider {
 		}
 	}
 
-	public String getSubject(String token) {
+	public String getEmail(String token) {
+		return getClaims(token).getSubject();
+	}
+
+	public Long getUserId(String token) {
+		Object claim = getClaims(token).get("userId");
+
+		if (claim instanceof Integer i) {
+			return i.longValue();
+		}
+
+		return Long.valueOf(claim.toString());
+	}
+
+	public List<String> getRoles(String token) {
 		return Jwts.parser()
 			.verifyWith(key)
 			.build()
 			.parseSignedClaims(token)
 			.getPayload()
-			.getSubject();
+			.get(SecurityConstants.CLAIM_ROLES, List.class);
+	}
+
+	private Claims getClaims(String token) {
+		return Jwts.parser()
+			.verifyWith(key)
+			.build()
+			.parseSignedClaims(token)
+			.getPayload();
 	}
 }

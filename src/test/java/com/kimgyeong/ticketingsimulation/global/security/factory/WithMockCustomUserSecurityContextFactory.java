@@ -6,19 +6,20 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
+import com.kimgyeong.ticketingsimulation.global.auth.CustomUserDetails;
 import com.kimgyeong.ticketingsimulation.global.security.annotation.WithMockCustomUser;
 
 public class WithMockCustomUserSecurityContextFactory implements WithSecurityContextFactory<WithMockCustomUser> {
 
 	@Override
 	public SecurityContext createSecurityContext(WithMockCustomUser customUser) {
+		long id = customUser.id();
 		String email = customUser.email();
 		String role = customUser.role();
 
-		User principal = new User(email, "password", List.of(new SimpleGrantedAuthority(role)));
+		CustomUserDetails principal = new CustomUserDetails(id, email, List.of(new SimpleGrantedAuthority(role)));
 
 		UsernamePasswordAuthenticationToken authentication =
 			new UsernamePasswordAuthenticationToken(principal, "password", principal.getAuthorities());

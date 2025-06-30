@@ -1,13 +1,15 @@
 package com.kimgyeong.ticketingsimulation.global.config.security;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+
+import com.kimgyeong.ticketingsimulation.global.auth.CustomUserDetails;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.GenericFilter;
@@ -31,10 +33,18 @@ public class JwtAuthenticationFilter extends GenericFilter {
 		if (header != null && header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
 			String token = header.substring(SecurityConstants.TOKEN_PREFIX.length());
 			if (jwtTokenProvider.validateToken(token)) {
-				String subject = jwtTokenProvider.getSubject(token);
-				User principal = new User(subject, "", Collections.emptyList());
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-					principal, token, principal.getAuthorities());
+				String email = jwtTokenProvider.getEmail(token);
+				Long userId = jwtTokenProvider.getUserId(token);
+				List<String> roles = jwtTokenProvider.getRoles(token);
+
+				List<SimpleGrantedAuthority> authorities = roles.stream()
+					.map(SimpleGrantedAuthority::new)
+					.toList();
+
+				CustomUserDetails userDetails = new CustomUserDetails(userId, email, authorities);
+				UsernamePasswordAuthenticationToken authentication =
+					new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
+
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
