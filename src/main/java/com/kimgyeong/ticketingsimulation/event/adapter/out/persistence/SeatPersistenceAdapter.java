@@ -1,6 +1,7 @@
 package com.kimgyeong.ticketingsimulation.event.adapter.out.persistence;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -31,5 +32,11 @@ public class SeatPersistenceAdapter implements SeatRepositoryPort {
 		SeatEntity entity = SeatEntityMapper.toEntity(seat);
 
 		repository.save(entity);
+	}
+
+	@Override
+	public Optional<Seat> findById(Long seatId) {
+		return repository.findById(seatId)
+			.map(SeatEntityMapper::toDomain);
 	}
 }
