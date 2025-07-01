@@ -49,7 +49,7 @@ public class UserController {
 	@PostMapping
 	public ResponseEntity<Void> register(@Valid @RequestBody RegisterUserRequest request) {
 		Long id = registerUserUseCase.register(request.toCommand());
-		return ResponseEntity.created(URI.create("/users/" + id)).build();
+		return ResponseEntity.created(URI.create("/api/users/" + id)).build();
 	}
 
 	@Operation(summary = "회원 정보 조회", description = "현재 로그인한 사용자의 정보를 반환합니다.")
