@@ -1,5 +1,6 @@
 package com.kimgyeong.ticketingsimulation.event.application;
 
+import static com.kimgyeong.ticketingsimulation.event.adapter.in.ReleaseSeatScheduler.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
@@ -32,7 +33,7 @@ class ReleaseSeatUseCaseImplTest {
 		given(seatRepositoryPort.findAllExpiredHeldSeats(any()))
 			.willReturn(List.of(expired1, expired2));
 
-		releaseSeatUseCase.releaseExpiredSeats(now.minusMinutes(2));
+		releaseSeatUseCase.releaseExpiredSeats(now.minusMinutes(RELEASE_SEAT_THRESHOLD_MINUTE));
 
 		then(seatRepositoryPort).should().saveAll(
 			argThat(seats -> seats.stream().allMatch(seat -> seat.status() == SeatStatus.AVAILABLE))
