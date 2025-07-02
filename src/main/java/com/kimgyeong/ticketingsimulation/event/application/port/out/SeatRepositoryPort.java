@@ -1,5 +1,6 @@
 package com.kimgyeong.ticketingsimulation.event.application.port.out;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,4 +12,8 @@ public interface SeatRepositoryPort {
 	void save(Seat seat);
 
 	Optional<Seat> findById(Long seatId);
+
+	List<Seat> findAllExpiredHeldSeats(LocalDateTime threshold);
+
+	void saveAll(List<Seat> seats);
 }

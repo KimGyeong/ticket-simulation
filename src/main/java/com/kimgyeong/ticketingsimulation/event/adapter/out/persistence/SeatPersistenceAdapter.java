@@ -1,5 +1,6 @@
 package com.kimgyeong.ticketingsimulation.event.adapter.out.persistence;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,5 +39,23 @@ public class SeatPersistenceAdapter implements SeatRepositoryPort {
 	public Optional<Seat> findById(Long seatId) {
 		return repository.findById(seatId)
 			.map(SeatEntityMapper::toDomain);
+	}
+
+	@Override
+	public List<Seat> findAllExpiredHeldSeats(LocalDateTime threshold) {
+		List<SeatEntity> allExpiredHeldSeats = repository.findAllExpiredHeldSeats(threshold);
+
+		return allExpiredHeldSeats.stream()
+			.map(SeatEntityMapper::toDomain)
+			.toList();
+	}
+
+	@Override
+	public void saveAll(List<Seat> seats) {
+		List<SeatEntity> seatEntities = seats.stream()
+			.map(SeatEntityMapper::toEntity)
+			.toList();
+
+		repository.saveAll(seatEntities);
 	}
 }

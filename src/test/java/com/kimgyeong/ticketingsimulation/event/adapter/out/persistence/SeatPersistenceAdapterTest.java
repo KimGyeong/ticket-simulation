@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testcontainers.shaded.com.google.common.collect.Iterables;
 
 import com.kimgyeong.ticketingsimulation.event.adapter.out.persistence.entity.SeatEntity;
 import com.kimgyeong.ticketingsimulation.event.adapter.out.persistence.mapper.SeatEntityMapper;
@@ -48,5 +49,37 @@ class SeatPersistenceAdapterTest {
 		adapter.save(seat);
 
 		then(repository).should().save(any(SeatEntity.class));
+	}
+
+	@Test
+	void findAllExpiredHeldSeats() {
+		LocalDateTime threshold = LocalDateTime.now().minusSeconds(120);
+
+		SeatEntity expiredSeat1 = new SeatEntity(1L, 1L, SeatStatus.TEMPORARY_HOLD, 1, threshold.minusSeconds(10),
+			null);
+		SeatEntity expiredSeat2 = new SeatEntity(2L, 1L, SeatStatus.TEMPORARY_HOLD, 2, threshold.minusSeconds(30),
+			null);
+
+		given(repository.findAllExpiredHeldSeats(threshold))
+			.willReturn(List.of(expiredSeat1, expiredSeat2));
+
+		List<Seat> result = adapter.findAllExpiredHeldSeats(threshold);
+
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0).id()).isEqualTo(1L);
+		assertThat(result.get(1).number()).isEqualTo(2);
+		assertThat(result.get(0).status()).isEqualTo(SeatStatus.TEMPORARY_HOLD);
+	}
+
+	@Test
+	void saveAll() {
+		Seat domainSeat = new Seat(1L, 1L, SeatStatus.TEMPORARY_HOLD, 1, LocalDateTime.now(), 1L);
+
+		adapter.saveAll(List.of(domainSeat));
+
+		then(repository).should().saveAll(
+			argThat(entities -> Iterables.size(entities) == 1 &&
+				Iterables.get(entities, 0).getId().equals(domainSeat.id()))
+		);
 	}
 }
