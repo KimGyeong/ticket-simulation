@@ -3,6 +3,7 @@ package com.kimgyeong.ticketingsimulation.event.application;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReadSeatUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.out.SeatRepositoryPort;
@@ -17,6 +18,7 @@ public class ReadSeatUseCaseImpl implements ReadSeatUseCase {
 	private final SeatRepositoryPort seatRepository;
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Seat> getSeatsByEventId(Long eventId) {
 		return seatRepository.findAllByEventId(eventId);
 	}

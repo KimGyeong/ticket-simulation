@@ -1,6 +1,7 @@
 package com.kimgyeong.ticketingsimulation.event.application;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kimgyeong.ticketingsimulation.event.application.port.in.HoldSeatUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.out.SeatRepositoryPort;
@@ -18,6 +19,7 @@ public class HoldSeatUseCaseImpl implements HoldSeatUseCase {
 	private final RedisLockService redisLockService;
 
 	@Override
+	@Transactional
 	public void holdSeat(Long seatId, Long userId) {
 		String lockKey = "seat:" + seatId;
 

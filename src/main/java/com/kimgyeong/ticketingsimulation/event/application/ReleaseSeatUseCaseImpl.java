@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReleaseSeatUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.out.SeatRepositoryPort;
@@ -18,6 +19,7 @@ public class ReleaseSeatUseCaseImpl implements ReleaseSeatUseCase {
 	private final SeatRepositoryPort seatRepositoryPort;
 
 	@Override
+	@Transactional
 	public void releaseExpiredSeats(LocalDateTime threshold) {
 		List<Seat> expiredSeats = seatRepositoryPort.findAllExpiredHeldSeats(threshold);
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kimgyeong.ticketingsimulation.global.config.security.JwtTokenProvider;
 import com.kimgyeong.ticketingsimulation.global.exception.InvalidCredentialsException;
@@ -24,6 +25,7 @@ public class LoginUserUseCaseImpl implements LoginUserUseCase {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
+	@Transactional(readOnly = true)
 	public String login(LoginUserCommand command) {
 		User user = userRepositoryPort.findByEmail(command.email())
 			.orElseThrow(UserNotFoundException::new);

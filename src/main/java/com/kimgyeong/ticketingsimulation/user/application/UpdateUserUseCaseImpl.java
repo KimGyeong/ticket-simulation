@@ -1,6 +1,7 @@
 package com.kimgyeong.ticketingsimulation.user.application;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kimgyeong.ticketingsimulation.global.exception.UserNotFoundException;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.UpdateUserUseCase;
@@ -17,6 +18,7 @@ public class UpdateUserUseCaseImpl implements UpdateUserUseCase {
 	private final UserRepositoryPort userRepositoryPort;
 
 	@Override
+	@Transactional
 	public User update(String email, UpdateUserCommand command) {
 		User user = userRepositoryPort.findByEmail(email)
 			.orElseThrow(UserNotFoundException::new);

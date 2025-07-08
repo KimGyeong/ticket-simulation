@@ -2,6 +2,7 @@ package com.kimgyeong.ticketingsimulation.user.application;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kimgyeong.ticketingsimulation.global.exception.DuplicateEmailException;
 import com.kimgyeong.ticketingsimulation.user.application.port.in.RegisterUserUseCase;
@@ -19,6 +20,7 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
+	@Transactional
 	public Long register(RegisterUserCommand command) {
 		if (userRepositoryPort.existsByEmail(command.email())) {
 			throw new DuplicateEmailException();
