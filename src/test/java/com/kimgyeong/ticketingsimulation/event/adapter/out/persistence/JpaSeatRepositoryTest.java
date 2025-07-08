@@ -35,4 +35,21 @@ class JpaSeatRepositoryTest {
 		assertThat(result).hasSize(2);
 		assertThat(result).extracting("status").containsOnly(SeatStatus.TEMPORARY_HOLD);
 	}
+
+	@Test
+	void saveAll() {
+		Long eventId = 1L;
+		List<SeatEntity> seats = List.of(
+			new SeatEntity(null, eventId, SeatStatus.AVAILABLE, 1, null, null),
+			new SeatEntity(null, eventId, SeatStatus.AVAILABLE, 2, null, null),
+			new SeatEntity(null, eventId, SeatStatus.AVAILABLE, 3, null, null)
+		);
+
+		List<SeatEntity> savedEntities = repository.saveAll(seats);
+
+		assertThat(savedEntities).hasSize(3);
+		assertThat(savedEntities.get(0).getId()).isNotNull();
+		assertThat(savedEntities.get(0).getEventId()).isEqualTo(eventId);
+		assertThat(savedEntities.get(0).getStatus()).isEqualTo(SeatStatus.AVAILABLE);
+	}
 }
