@@ -25,6 +25,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/users/me").hasRole("USER")
 				.requestMatchers(HttpMethod.GET, "/api/seats").hasRole("USER")
+				.requestMatchers(HttpMethod.POST, "/api/events").hasRole("USER")
 				.anyRequest().authenticated())
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

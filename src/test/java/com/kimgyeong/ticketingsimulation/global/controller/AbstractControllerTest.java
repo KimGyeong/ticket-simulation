@@ -12,6 +12,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.kimgyeong.ticketingsimulation.global.config.security.JwtTokenProvider;
 import com.kimgyeong.ticketingsimulation.global.config.security.SecurityConfig;
 
@@ -25,6 +26,7 @@ public abstract class AbstractControllerTest {
 	@BeforeEach
 	void setUp(WebApplicationContext webApplicationContext) {
 		objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
 		this.mockMvc = MockMvcBuilders
 			.webAppContextSetup(webApplicationContext)
 			.addFilters(new CharacterEncodingFilter("UTF-8", true))
