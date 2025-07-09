@@ -29,7 +29,7 @@ public class EventController {
 
 	@Operation(summary = "이벤트 생성", description = "새로운 이벤트를 생성하고 좌석을 자동으로 생성합니다.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "이벤트 생성 성공"),
+		@ApiResponse(responseCode = "201", description = "이벤트 생성 성공"),
 		@ApiResponse(responseCode = "400", description = "잘못된 요청"),
 		@ApiResponse(responseCode = "500", description = "서버 오류")
 	})
