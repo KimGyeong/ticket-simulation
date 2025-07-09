@@ -1,5 +1,7 @@
 package com.kimgyeong.ticketingsimulation.event.adapter.out.persistence;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.kimgyeong.ticketingsimulation.event.adapter.out.persistence.entity.EventEntity;
@@ -20,5 +22,13 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
 		EventEntity entity = EventEntityMapper.toEntity(event);
 		EventEntity savedEntity = eventRepository.save(entity);
 		return EventEntityMapper.toDomain(savedEntity);
+	}
+
+	@Override
+	public List<Event> findAll() {
+		List<EventEntity> allEvents = eventRepository.findAll();
+		return allEvents.stream()
+			.map(EventEntityMapper::toDomain)
+			.toList();
 	}
 }

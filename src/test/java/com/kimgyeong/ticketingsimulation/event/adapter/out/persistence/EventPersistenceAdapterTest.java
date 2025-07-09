@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,5 +43,18 @@ class EventPersistenceAdapterTest {
 
 		EventEntity passedToRepo = captor.getValue();
 		assertThat(passedToRepo.getTitle()).isEqualTo(event.title());
+	}
+
+	@Test
+	void findAll() {
+		EventEntity entity = new EventEntity(1L, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
+			LocalDateTime.now().plusDays(2), 100);
+
+		when(repository.findAll()).thenReturn(List.of(entity));
+
+		List<Event> result = adapter.findAll();
+
+		assertThat(result.get(0).id()).isEqualTo(entity.getId());
+		assertThat(result.get(0).title()).isEqualTo(entity.getTitle());
 	}
 }
