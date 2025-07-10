@@ -58,4 +58,9 @@ public class SeatPersistenceAdapter implements SeatRepositoryPort {
 
 		repository.saveAll(seatEntities);
 	}
+
+	@Override
+	public Long countAvailableByEventId(Long id) {
+		return repository.countAvailableByEventId(id);
+	}
 }

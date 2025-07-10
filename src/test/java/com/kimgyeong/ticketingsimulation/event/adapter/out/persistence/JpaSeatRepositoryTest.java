@@ -52,4 +52,23 @@ class JpaSeatRepositoryTest {
 		assertThat(savedEntities.get(0).getEventId()).isEqualTo(eventId);
 		assertThat(savedEntities.get(0).getStatus()).isEqualTo(SeatStatus.AVAILABLE);
 	}
+
+	@Test
+	void countAvailableByEventId() {
+		Long eventId = 1L;
+
+		List<SeatEntity> seats = List.of(
+			new SeatEntity(null, eventId, SeatStatus.AVAILABLE, 1, null, null),
+			new SeatEntity(null, eventId, SeatStatus.AVAILABLE, 2, null, null),
+			new SeatEntity(null, eventId, SeatStatus.TEMPORARY_HOLD, 3, null, null),
+			new SeatEntity(null, eventId, SeatStatus.BOOKED, 4, null, null),
+			new SeatEntity(null, 2L, SeatStatus.AVAILABLE, 1, null, null) // 다른 이벤트
+		);
+
+		repository.saveAll(seats);
+
+		long availableCount = repository.countAvailableByEventId(eventId);
+
+		assertThat(availableCount).isEqualTo(2);
+	}
 }

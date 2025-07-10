@@ -82,4 +82,14 @@ class SeatPersistenceAdapterTest {
 				Iterables.get(entities, 0).getId().equals(domainSeat.id()))
 		);
 	}
+
+	@Test
+	void countAvailableByEvnetId() {
+		Long eventId = 1L;
+		given(repository.countAvailableByEventId(eventId)).willReturn(5L);
+
+		long result = adapter.countAvailableByEventId(eventId);
+
+		assertThat(result).isEqualTo(5L);
+	}
 }

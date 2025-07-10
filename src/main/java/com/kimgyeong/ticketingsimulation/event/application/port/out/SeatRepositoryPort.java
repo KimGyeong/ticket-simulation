@@ -16,4 +16,6 @@ public interface SeatRepositoryPort {
 	List<Seat> findAllExpiredHeldSeats(LocalDateTime threshold);
 
 	void saveAll(List<Seat> seats);
+
+	Long countAvailableByEventId(Long id);
 }
