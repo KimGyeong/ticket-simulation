@@ -13,9 +13,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.kimgyeong.ticketingsimulation.event.adapter.in.web.dto.CreateEventRequest;
+import com.kimgyeong.ticketingsimulation.event.application.model.EventDetailResult;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.CreateEventCommand;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.CreateEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReadAllEventUseCase;
+import com.kimgyeong.ticketingsimulation.event.application.port.in.ReadEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.domain.model.Event;
 import com.kimgyeong.ticketingsimulation.global.controller.AbstractControllerTest;
 import com.kimgyeong.ticketingsimulation.global.security.annotation.WithMockCustomUser;
@@ -27,6 +29,9 @@ class EventControllerTest extends AbstractControllerTest {
 
 	@MockitoBean
 	private ReadAllEventUseCase readAllEventUseCase;
+
+	@MockitoBean
+	private ReadEventUseCase readEventUseCase;
 
 	@Test
 	@WithMockCustomUser
@@ -84,4 +89,21 @@ class EventControllerTest extends AbstractControllerTest {
 			.andExpect(jsonPath("$.eventResponses[0].id").value(1L))
 			.andExpect(jsonPath("$.eventResponses[0].title").value("테스트 이벤트"));
 	}
+
+	@Test
+	@WithMockCustomUser
+	void findEventById_validRequest_returns200() throws Exception {
+		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().plusDays(1),
+			LocalDateTime.now().plusDays(1), 100);
+		EventDetailResult result = new EventDetailResult(event, 5L);
+		when(readEventUseCase.findById(anyLong())).thenReturn(result);
+
+		mockMvc.perform(get("/api/events/" + event.id())
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(event.id()))
+			.andExpect(jsonPath("$.title").value(event.title()))
+			.andExpect(jsonPath("$.availableSeatCount").value(result.availableSeatCount()));
+	}
+
 }
