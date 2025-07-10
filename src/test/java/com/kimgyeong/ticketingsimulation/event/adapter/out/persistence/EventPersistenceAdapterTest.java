@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,5 +57,18 @@ class EventPersistenceAdapterTest {
 
 		assertThat(result.get(0).id()).isEqualTo(entity.getId());
 		assertThat(result.get(0).title()).isEqualTo(entity.getTitle());
+	}
+
+	@Test
+	void findById() {
+		EventEntity entity = new EventEntity(1L, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
+			LocalDateTime.now().plusDays(2), 100);
+
+		when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
+
+		Optional<Event> result = adapter.findById(1L);
+
+		assertThat(result.get().id()).isEqualTo(entity.getId());
+		assertThat(result.get().title()).isEqualTo(entity.getTitle());
 	}
 }

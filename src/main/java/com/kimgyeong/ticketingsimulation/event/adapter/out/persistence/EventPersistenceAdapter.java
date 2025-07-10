@@ -1,6 +1,7 @@
 package com.kimgyeong.ticketingsimulation.event.adapter.out.persistence;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -30,5 +31,11 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
 		return allEvents.stream()
 			.map(EventEntityMapper::toDomain)
 			.toList();
+	}
+
+	@Override
+	public Optional<Event> findById(Long id) {
+		return eventRepository.findById(id)
+			.map(EventEntityMapper::toDomain);
 	}
 }
