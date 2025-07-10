@@ -12,6 +12,7 @@ public enum ErrorCode {
 	INVALID_SEAT_STATUS("E007", "임시 점유 없이 예매할 수 없습니다.", HttpStatus.BAD_REQUEST),
 	LOCK_ACQUISITION("E998", "락 획득 실패.", HttpStatus.CONFLICT),
 	SEAT_NOT_FOUND("E008", "존재하지 않는 좌석입니다.", HttpStatus.NOT_FOUND),
+	EVENT_NOT_FOUND("E009", "존재하지 않는 이벤트입니다.", HttpStatus.NOT_FOUND),
 	INTERNAL_SERVER_ERROR("E999", "서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
 	private final String code;
