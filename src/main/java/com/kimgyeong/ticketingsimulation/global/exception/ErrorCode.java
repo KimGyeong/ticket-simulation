@@ -13,6 +13,8 @@ public enum ErrorCode {
 	LOCK_ACQUISITION("E998", "락 획득 실패.", HttpStatus.CONFLICT),
 	SEAT_NOT_FOUND("E008", "존재하지 않는 좌석입니다.", HttpStatus.NOT_FOUND),
 	EVENT_NOT_FOUND("E009", "존재하지 않는 이벤트입니다.", HttpStatus.NOT_FOUND),
+	EVENT_ACCESS_DENIED("E010", "자신이 만든 이벤트가 아닙니다.", HttpStatus.UNAUTHORIZED),
+	INVALID_EVENT_UPDATE("E011", "티켓팅이 시작된 이벤트는 수정할 수 없습니다.", HttpStatus.BAD_REQUEST),
 	INTERNAL_SERVER_ERROR("E999", "서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
 	private final String code;
