@@ -24,9 +24,10 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 				.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/users/me").hasRole("USER")
-				.requestMatchers(HttpMethod.GET, "/api/seats").hasRole("USER")
-				.requestMatchers(HttpMethod.POST, "/api/events").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/seats").hasAnyRole("USER", "ADMIN")
+				.requestMatchers(HttpMethod.POST, "/api/events").hasAnyRole("USER", "ADMIN")
 				.requestMatchers(HttpMethod.GET, "/api/events").permitAll()
+				.requestMatchers(HttpMethod.PATCH, "/api/events").hasAnyRole("USER", "ADMIN")
 				.anyRequest().authenticated())
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
