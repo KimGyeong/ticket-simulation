@@ -64,7 +64,7 @@ class UserControllerTest extends AbstractControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(registerUserRequest)))
 			.andExpect(status().isCreated())
-			.andExpect(header().string("Location", "/users/1"));
+			.andExpect(header().string("Location", "/api/users/1"));
 	}
 
 	@ParameterizedTest(name = "{index} - 필드: {0}")
