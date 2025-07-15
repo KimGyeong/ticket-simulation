@@ -36,7 +36,7 @@ class EventControllerTest extends AbstractControllerTest {
 	@Test
 	@WithMockCustomUser
 	void createEvent_validRequest_returns201() throws Exception {
-		given(createEventUseCase.createEvent(any(CreateEventCommand.class)))
+		given(createEventUseCase.createEvent(anyLong(), any(CreateEventCommand.class)))
 			.willReturn(1L);
 
 		CreateEventRequest request = new CreateEventRequest(
@@ -78,7 +78,7 @@ class EventControllerTest extends AbstractControllerTest {
 	@WithMockCustomUser
 	void findAllEvent_validRequest_returns200() throws Exception {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(1), 100);
+			LocalDateTime.now().plusDays(1), 100, 1L);
 		when(readAllEventUseCase.findAll()).thenReturn(List.of(event));
 
 		mockMvc.perform(get("/api/events")
@@ -94,7 +94,7 @@ class EventControllerTest extends AbstractControllerTest {
 	@WithMockCustomUser
 	void findEventById_validRequest_returns200() throws Exception {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(1), 100);
+			LocalDateTime.now().plusDays(1), 100, 1L);
 		EventDetailResult result = new EventDetailResult(event, 5L);
 		when(readEventUseCase.findById(anyLong())).thenReturn(result);
 

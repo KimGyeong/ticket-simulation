@@ -3,7 +3,7 @@ package com.kimgyeong.ticketingsimulation.event.domain.model;
 import java.time.LocalDateTime;
 
 public record Event(Long id, String title, String description, String imageUrl, LocalDateTime ticketingStartAt,
-					LocalDateTime eventStartAt, int maxAttendees) {
+					LocalDateTime eventStartAt, int maxAttendees, Long userId) {
 	public boolean isTicketingOpen(LocalDateTime now) {
 		return now.isAfter(ticketingStartAt);
 	}

@@ -50,12 +50,13 @@ class CreateEventUseCaseImplTest {
 			command.imageUrl(),
 			command.ticketingStartAt(),
 			command.eventStartAt(),
-			command.maxAttendees()
+			command.maxAttendees(),
+			1L
 		);
 
 		given(eventPort.save(any())).willReturn(savedEvent);
 
-		Long resultId = createEventUseCase.createEvent(command);
+		Long resultId = createEventUseCase.createEvent(1L, command);
 
 		assertThat(resultId).isEqualTo(1L);
 

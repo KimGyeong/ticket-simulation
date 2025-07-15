@@ -24,7 +24,7 @@ public class CreateEventUseCaseImpl implements CreateEventUseCase {
 
 	@Override
 	@Transactional
-	public Long createEvent(CreateEventCommand command) {
+	public Long createEvent(Long userId, CreateEventCommand command) {
 		Event event = new Event(
 			null,
 			command.title(),
@@ -32,7 +32,8 @@ public class CreateEventUseCaseImpl implements CreateEventUseCase {
 			command.imageUrl(),
 			command.ticketingStartAt(),
 			command.eventStartAt(),
-			command.maxAttendees()
+			command.maxAttendees(),
+			userId
 		);
 		Event savedEvent = eventRepositoryPort.save(event);
 

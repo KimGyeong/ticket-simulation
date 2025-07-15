@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import com.kimgyeong.ticketingsimulation.event.application.port.in.CreateEventUs
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReadAllEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReadEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.domain.model.Event;
+import com.kimgyeong.ticketingsimulation.global.auth.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,9 +47,10 @@ public class EventController {
 		@ApiResponse(responseCode = "500", description = "서버 오류")
 	})
 	@PostMapping
-	public ResponseEntity<Void> createEvent(@Valid @RequestBody CreateEventRequest request) {
+	public ResponseEntity<Void> createEvent(@AuthenticationPrincipal CustomUserDetails userDetails,
+		@Valid @RequestBody CreateEventRequest request) {
 		CreateEventCommand command = request.toCommand();
-		Long eventId = createEventUseCase.createEvent(command);
+		Long eventId = createEventUseCase.createEvent(userDetails.getUserId(), command);
 		return ResponseEntity.created(URI.create("/api/events/" + eventId)).build();
 	}
 

@@ -35,4 +35,6 @@ public class EventEntity extends BaseTimeEntity {
 	private LocalDateTime eventStartAt;
 
 	private Integer maxAttendees;
+
+	private Long userId;
 }

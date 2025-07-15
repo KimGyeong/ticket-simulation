@@ -28,9 +28,9 @@ class EventPersistenceAdapterTest {
 	@Test
 	void save() {
 		Event event = new Event(null, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(2), 100);
+			LocalDateTime.now().plusDays(2), 100, 1L);
 		EventEntity entity = new EventEntity(1L, event.title(), event.description(), event.imageUrl(),
-			event.ticketingStartAt(), event.eventStartAt(), event.maxAttendees());
+			event.ticketingStartAt(), event.eventStartAt(), event.maxAttendees(), 1L);
 
 		when(repository.save(any())).thenReturn(entity);
 
@@ -49,7 +49,7 @@ class EventPersistenceAdapterTest {
 	@Test
 	void findAll() {
 		EventEntity entity = new EventEntity(1L, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(2), 100);
+			LocalDateTime.now().plusDays(2), 100, 1L);
 
 		when(repository.findAll()).thenReturn(List.of(entity));
 
@@ -62,7 +62,7 @@ class EventPersistenceAdapterTest {
 	@Test
 	void findById() {
 		EventEntity entity = new EventEntity(1L, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(2), 100);
+			LocalDateTime.now().plusDays(2), 100, 1L);
 
 		when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
 

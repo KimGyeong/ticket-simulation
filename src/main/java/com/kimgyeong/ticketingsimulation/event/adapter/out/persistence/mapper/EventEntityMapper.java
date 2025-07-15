@@ -12,7 +12,8 @@ public class EventEntityMapper {
 			event.imageUrl(),
 			event.ticketingStartAt(),
 			event.eventStartAt(),
-			event.maxAttendees()
+			event.maxAttendees(),
+			event.userId()
 		);
 	}
 
@@ -24,7 +25,8 @@ public class EventEntityMapper {
 			entity.getImageUrl(),
 			entity.getTicketingStartAt(),
 			entity.getEventStartAt(),
-			entity.getMaxAttendees()
+			entity.getMaxAttendees(),
+			entity.getUserId()
 		);
 	}
 }
