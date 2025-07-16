@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import com.kimgyeong.ticketingsimulation.event.adapter.in.web.dto.UpdateEventReq
 import com.kimgyeong.ticketingsimulation.event.application.model.EventDetailResult;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.CreateEventCommand;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.CreateEventUseCase;
+import com.kimgyeong.ticketingsimulation.event.application.port.in.DeleteEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReadAllEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReadEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.UpdateEventCommand;
@@ -45,6 +47,7 @@ public class EventController {
 	private final ReadAllEventUseCase readAllEventUseCase;
 	private final ReadEventUseCase readEventUseCase;
 	private final UpdateEventUseCase updateEventUseCase;
+	private final DeleteEventUseCase deleteEventUseCase;
 
 	@Operation(summary = "이벤트 생성", description = "새로운 이벤트를 생성하고 좌석을 자동으로 생성합니다.")
 	@ApiResponses(value = {
@@ -100,5 +103,20 @@ public class EventController {
 		Event updatedEvent = updateEventUseCase.updateEvent(userDetail.getUserId(), eventId, command);
 
 		return ResponseEntity.ok(EventResponse.from(updatedEvent));
+	}
+
+	@Operation(summary = "이벤트 삭제", description = "이벤트 데이터를 삭제합니다.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "204", description = "이벤트 삭제 성공"),
+		@ApiResponse(responseCode = "401", description = "이벤트 접근 불가"),
+		@ApiResponse(responseCode = "404", description = "이벤트 존재하지 않음"),
+		@ApiResponse(responseCode = "500", description = "서버 오류")
+	})
+	@DeleteMapping("/{eventId}")
+	public ResponseEntity<Void> deleteEvent(@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long eventId) {
+		deleteEventUseCase.deleteById(eventId, userDetails.getUserId());
+
+		return ResponseEntity.noContent().build();
 	}
 }

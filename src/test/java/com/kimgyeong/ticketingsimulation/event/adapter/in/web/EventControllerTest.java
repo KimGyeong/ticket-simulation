@@ -17,6 +17,7 @@ import com.kimgyeong.ticketingsimulation.event.adapter.in.web.dto.UpdateEventReq
 import com.kimgyeong.ticketingsimulation.event.application.model.EventDetailResult;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.CreateEventCommand;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.CreateEventUseCase;
+import com.kimgyeong.ticketingsimulation.event.application.port.in.DeleteEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReadAllEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReadEventUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.UpdateEventUseCase;
@@ -37,6 +38,9 @@ class EventControllerTest extends AbstractControllerTest {
 
 	@MockitoBean
 	private UpdateEventUseCase updateEventUseCase;
+
+	@MockitoBean
+	private DeleteEventUseCase deleteEventUseCase;
 
 	@Test
 	@WithMockCustomUser
@@ -131,4 +135,12 @@ class EventControllerTest extends AbstractControllerTest {
 			.andExpect(jsonPath("$.title").value(result.title()));
 	}
 
+	@Test
+	@WithMockCustomUser
+	void deleteUser_validRequest_returns204() throws Exception {
+		willDoNothing().given(deleteEventUseCase).deleteById(1L, 1L);
+
+		mockMvc.perform(delete("/api/events/" + 1L))
+			.andExpect(status().isNoContent());
+	}
 }
