@@ -71,4 +71,11 @@ class EventPersistenceAdapterTest {
 		assertThat(result.get().id()).isEqualTo(entity.getId());
 		assertThat(result.get().title()).isEqualTo(entity.getTitle());
 	}
+
+	@Test
+	void deleteById() {
+		adapter.deleteById(1L);
+
+		verify(repository).deleteById(1L);
+	}
 }

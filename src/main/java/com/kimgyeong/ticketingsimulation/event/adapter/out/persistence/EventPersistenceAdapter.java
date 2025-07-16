@@ -38,4 +38,9 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
 		return eventRepository.findById(id)
 			.map(EventEntityMapper::toDomain);
 	}
+
+	@Override
+	public void deleteById(Long id) {
+		eventRepository.deleteById(id);
+	}
 }

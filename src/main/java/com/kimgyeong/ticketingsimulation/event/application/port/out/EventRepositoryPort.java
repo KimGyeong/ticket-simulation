@@ -11,4 +11,6 @@ public interface EventRepositoryPort {
 	List<Event> findAll();
 
 	Optional<Event> findById(Long id);
+
+	void deleteById(Long id);
 }
