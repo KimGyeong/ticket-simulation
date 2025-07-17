@@ -23,9 +23,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/seats")
+@Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 @Tag(name = "Seat API", description = "좌석 정보 API")
 public class SeatController {
@@ -39,6 +41,7 @@ public class SeatController {
 	@GetMapping
 	public ResponseEntity<SeatResponses> getSeatsByEventId(
 		@RequestParam(name = "event-id", required = true) Long eventId) {
+		log.info("Get Seats event id: {}", eventId);
 		List<Seat> seats = readSeatUseCase.getSeatsByEventId(eventId);
 		return ResponseEntity.ok(SeatResponses.from(seats));
 	}
@@ -53,6 +56,7 @@ public class SeatController {
 	@PostMapping("/{seatId}/hold")
 	public ResponseEntity<Void> holdSeat(@PathVariable Long seatId,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		log.info("Hold Seat seat id: {}, user id: {}", seatId, userDetails.getUserId());
 		Long userId = userDetails.getUserId();
 		holdSeatUseCase.holdSeat(seatId, userId);
 		return ResponseEntity.ok().build();

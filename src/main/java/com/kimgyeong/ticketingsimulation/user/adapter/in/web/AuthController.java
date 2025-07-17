@@ -18,9 +18,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 @Tag(name = "Auth API", description = "인증 관련 API")
 public class AuthController {
@@ -35,6 +37,7 @@ public class AuthController {
 	})
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginUserRequest request) {
+		log.info("Login email: {}", request.email());
 		LoginUserCommand command = request.toCommand();
 		String token = loginUserUseCase.login(command);
 		return ResponseEntity.ok(new LoginResponse(token));

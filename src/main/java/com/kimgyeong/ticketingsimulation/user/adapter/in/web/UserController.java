@@ -29,9 +29,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/users")
+@Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 @Tag(name = "User API", description = "회원 관련 API")
 public class UserController {
@@ -48,6 +50,7 @@ public class UserController {
 	})
 	@PostMapping
 	public ResponseEntity<Void> register(@Valid @RequestBody RegisterUserRequest request) {
+		log.info("Register email: {}", request.email());
 		Long id = registerUserUseCase.register(request.toCommand());
 		return ResponseEntity.created(URI.create("/api/users/" + id)).build();
 	}
@@ -60,6 +63,7 @@ public class UserController {
 	})
 	@GetMapping("/me")
 	public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		log.info("Get User info email: {}", userDetails.getEmail());
 		String email = userDetails.getUsername();
 		User user = readUserUseCase.read(email);
 
@@ -75,6 +79,7 @@ public class UserController {
 	@PatchMapping("/me")
 	public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UpdateUserRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		log.info("Update user email: {}", userDetails.getEmail());
 		String email = userDetails.getUsername();
 		User updatedUser = updateUserUseCase.update(email, request.toCommand());
 
@@ -89,6 +94,7 @@ public class UserController {
 	})
 	@DeleteMapping("/me")
 	public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		log.info("Delete user email: {}", userDetails.getEmail());
 		String email = userDetails.getUsername();
 		deleteUserUseCase.delete(email);
 

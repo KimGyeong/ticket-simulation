@@ -37,10 +37,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
+@Slf4j
 @Tag(name = "Event API", description = "이벤트 정보 API")
 public class EventController {
 	private final CreateEventUseCase createEventUseCase;
@@ -58,6 +60,7 @@ public class EventController {
 	@PostMapping
 	public ResponseEntity<Void> createEvent(@AuthenticationPrincipal CustomUserDetails userDetails,
 		@Valid @RequestBody CreateEventRequest request) {
+		log.info("Create event title: {}, user id: {}", request.title(), userDetails.getUserId());
 		CreateEventCommand command = request.toCommand();
 		Long eventId = createEventUseCase.createEvent(userDetails.getUserId(), command);
 		return ResponseEntity.created(URI.create("/api/events/" + eventId)).build();
@@ -70,6 +73,7 @@ public class EventController {
 	})
 	@GetMapping
 	public ResponseEntity<EventResponses> findAllEvent() {
+		log.info("Find All Events");
 		List<Event> allEvents = readAllEventUseCase.findAll();
 		return ResponseEntity.ok(EventResponses.from(allEvents));
 	}
@@ -82,6 +86,7 @@ public class EventController {
 	})
 	@GetMapping("/{eventId}")
 	public ResponseEntity<DetailEventResponse> findEventById(@PathVariable Long eventId) {
+		log.info("Find event id: {}", eventId);
 		EventDetailResult result = readEventUseCase.findById(eventId);
 		return ResponseEntity.ok(DetailEventResponse.from(result));
 	}
@@ -98,6 +103,7 @@ public class EventController {
 	@PatchMapping("/{eventId}")
 	public ResponseEntity<EventResponse> updateEvent(@AuthenticationPrincipal CustomUserDetails userDetail,
 		@PathVariable Long eventId, @RequestBody @Valid UpdateEventRequest updateEventRequest) {
+		log.info("Update event id: {}, user id: {}", eventId, userDetail.getUserId());
 		UpdateEventCommand command = updateEventRequest.toCommand();
 
 		Event updatedEvent = updateEventUseCase.updateEvent(userDetail.getUserId(), eventId, command);
@@ -115,6 +121,7 @@ public class EventController {
 	@DeleteMapping("/{eventId}")
 	public ResponseEntity<Void> deleteEvent(@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long eventId) {
+		log.info("Delete event id: {}, user id: {}", eventId, userDetails.getUserId());
 		deleteEventUseCase.deleteById(eventId, userDetails.getUserId());
 
 		return ResponseEntity.noContent().build();
