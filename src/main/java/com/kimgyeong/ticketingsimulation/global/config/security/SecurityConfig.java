@@ -29,6 +29,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, "/api/events").permitAll()
 				.requestMatchers(HttpMethod.PATCH, "/api/events").hasAnyRole("USER", "ADMIN")
 				.requestMatchers(HttpMethod.DELETE, "/api/events").hasAnyRole("USER", "ADMIN")
+				.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
 				.anyRequest().authenticated())
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
