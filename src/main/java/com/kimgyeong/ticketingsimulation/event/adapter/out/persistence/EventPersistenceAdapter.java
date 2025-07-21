@@ -3,7 +3,7 @@ package com.kimgyeong.ticketingsimulation.event.adapter.out.persistence;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import com.kimgyeong.ticketingsimulation.event.adapter.out.persistence.entity.EventEntity;
 import com.kimgyeong.ticketingsimulation.event.adapter.out.persistence.mapper.EventEntityMapper;
@@ -14,7 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
-@Component
+@Repository
 public class EventPersistenceAdapter implements EventRepositoryPort {
 	private JpaEventRepository eventRepository;
 

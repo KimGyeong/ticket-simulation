@@ -2,7 +2,7 @@ package com.kimgyeong.ticketingsimulation.user.adapter.out.persistence;
 
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import com.kimgyeong.ticketingsimulation.user.adapter.out.persistence.entity.UserEntity;
 import com.kimgyeong.ticketingsimulation.user.adapter.out.persistence.mapper.UserEntityMapper;
@@ -13,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
-@Component
+@Repository
 public class UserPersistenceAdapter implements UserRepositoryPort {
 	private final JpaUserRepository userRepository;
 

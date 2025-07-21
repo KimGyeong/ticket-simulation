@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import com.kimgyeong.ticketingsimulation.event.adapter.out.persistence.entity.SeatEntity;
 import com.kimgyeong.ticketingsimulation.event.adapter.out.persistence.mapper.SeatEntityMapper;
@@ -15,7 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
-@Component
+@Repository
 public class SeatPersistenceAdapter implements SeatRepositoryPort {
 	private final JpaSeatRepository repository;
 
