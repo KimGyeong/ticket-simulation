@@ -2,15 +2,18 @@ package com.kimgyeong.ticketingsimulation.queue.adapter.in.web;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kimgyeong.ticketingsimulation.global.auth.CustomUserDetails;
 import com.kimgyeong.ticketingsimulation.queue.adapter.in.web.dto.EnterQueueRequest;
-import com.kimgyeong.ticketingsimulation.queue.adapter.in.web.dto.EnterQueueResponse;
+import com.kimgyeong.ticketingsimulation.queue.adapter.in.web.dto.QueueRankResponse;
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.EnterQueueUseCase;
+import com.kimgyeong.ticketingsimulation.queue.application.port.in.ReadQueueRankUseCase;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Queue API", description = "대기열 관련 API")
 public class QueueController {
 	private final EnterQueueUseCase enterQueueUseCase;
+	private final ReadQueueRankUseCase readQueueRankUseCase;
 
 	@PostMapping("/enter")
 	@Operation(summary = "대기열 입장")
@@ -38,12 +42,27 @@ public class QueueController {
 		@ApiResponse(responseCode = "400", description = "이벤트 시작 시각 이후 요청"),
 		@ApiResponse(responseCode = "500", description = "서버 에러")
 	})
-	public ResponseEntity<EnterQueueResponse> enterQueue(@AuthenticationPrincipal CustomUserDetails userDetails,
+	public ResponseEntity<QueueRankResponse> enterQueue(@AuthenticationPrincipal CustomUserDetails userDetails,
 		@Valid @RequestBody EnterQueueRequest enterQueueRequest) {
 		Long userId = userDetails.getUserId();
 		Long eventId = enterQueueRequest.eventId();
 		log.info("enter queue user id: {}, event id: {}", userId, eventId);
 		Long rank = enterQueueUseCase.enter(userId, eventId);
-		return ResponseEntity.ok(EnterQueueResponse.from(rank));
+		return ResponseEntity.ok(QueueRankResponse.from(rank));
+	}
+
+	@GetMapping("/rank")
+	@Operation(summary = "대기열 랭크 조회", description = "사용자의 현재 대기열 순서를 반환합니다.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "조회 성공"),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청"),
+		@ApiResponse(responseCode = "500", description = "서버 에러")
+	})
+	public ResponseEntity<QueueRankResponse> getRank(@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(value = "event-id", required = true) Long eventId) {
+		Long userId = userDetails.getUserId();
+		log.info("get rank user id: {}, event id: {}", userId, eventId);
+		Long rank = readQueueRankUseCase.getRank(userId, eventId);
+		return ResponseEntity.ok(QueueRankResponse.from(rank));
 	}
 }
