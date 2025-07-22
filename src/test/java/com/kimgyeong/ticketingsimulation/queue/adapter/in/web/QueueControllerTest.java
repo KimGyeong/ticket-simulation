@@ -15,6 +15,7 @@ import com.kimgyeong.ticketingsimulation.global.exception.EventAlreadyStartedExc
 import com.kimgyeong.ticketingsimulation.global.exception.TicketingNotOpenedException;
 import com.kimgyeong.ticketingsimulation.global.security.annotation.WithMockCustomUser;
 import com.kimgyeong.ticketingsimulation.queue.adapter.in.web.dto.EnterQueueRequest;
+import com.kimgyeong.ticketingsimulation.queue.application.port.in.CheckQueueAccessUseCase;
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.EnterQueueUseCase;
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.ReadQueueRankUseCase;
 
@@ -25,6 +26,9 @@ class QueueControllerTest extends AbstractControllerTest {
 
 	@MockitoBean
 	private ReadQueueRankUseCase readQueueRankUseCase;
+
+	@MockitoBean
+	private CheckQueueAccessUseCase checkQueueAccessUseCase;
 
 	@Test
 	@WithMockCustomUser
@@ -102,5 +106,33 @@ class QueueControllerTest extends AbstractControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.rank").value(IsNull.nullValue()));
+	}
+
+	@Test
+	@WithMockCustomUser
+	void checkAccess_validRequest_returns200_true() throws Exception {
+		Long userId = 1L;
+		Long eventId = 100L;
+
+		given(checkQueueAccessUseCase.hasAccess(userId, eventId)).willReturn(true);
+
+		mockMvc.perform(get("/api/queue/access")
+				.param("event-id", eventId.toString()))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.hasAccess").value(true));
+	}
+
+	@Test
+	@WithMockCustomUser
+	void checkAccess_validRequest_returns200_false() throws Exception {
+		Long userId = 1L;
+		Long eventId = 100L;
+
+		given(checkQueueAccessUseCase.hasAccess(userId, eventId)).willReturn(false);
+
+		mockMvc.perform(get("/api/queue/access")
+				.param("event-id", eventId.toString()))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.hasAccess").value(false));
 	}
 }

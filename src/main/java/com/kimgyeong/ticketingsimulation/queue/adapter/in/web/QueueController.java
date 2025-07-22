@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kimgyeong.ticketingsimulation.global.auth.CustomUserDetails;
+import com.kimgyeong.ticketingsimulation.queue.adapter.in.web.dto.CheckQueueAccessResponse;
 import com.kimgyeong.ticketingsimulation.queue.adapter.in.web.dto.EnterQueueRequest;
 import com.kimgyeong.ticketingsimulation.queue.adapter.in.web.dto.QueueRankResponse;
+import com.kimgyeong.ticketingsimulation.queue.application.port.in.CheckQueueAccessUseCase;
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.EnterQueueUseCase;
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.ReadQueueRankUseCase;
 
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class QueueController {
 	private final EnterQueueUseCase enterQueueUseCase;
 	private final ReadQueueRankUseCase readQueueRankUseCase;
+	private final CheckQueueAccessUseCase checkQueueAccessUseCase;
 
 	@PostMapping("/enter")
 	@Operation(summary = "대기열 입장")
@@ -64,5 +67,22 @@ public class QueueController {
 		log.info("get rank user id: {}, event id: {}", userId, eventId);
 		Long rank = readQueueRankUseCase.getRank(userId, eventId);
 		return ResponseEntity.ok(QueueRankResponse.from(rank));
+	}
+
+	@GetMapping("/access")
+	@Operation(summary = "대기열 입장 허용 여부 조회", description = "")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "조회 성공"),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청"),
+		@ApiResponse(responseCode = "500", description = "서버 에러")
+	})
+	public ResponseEntity<CheckQueueAccessResponse> checkAccess(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(value = "event-id", required = true) Long eventId
+	) {
+		Long userId = userDetails.getUserId();
+		log.info("check access user id: {}, event id: {}", userId, eventId);
+		boolean hasAccess = checkQueueAccessUseCase.hasAccess(userId, eventId);
+		return ResponseEntity.ok(CheckQueueAccessResponse.from(hasAccess));
 	}
 }
