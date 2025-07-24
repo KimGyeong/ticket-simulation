@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 @Repository
 public class EventPersistenceAdapter implements EventRepositoryPort {
-	private JpaEventRepository eventRepository;
+	private final JpaEventRepository eventRepository;
 
 	@Override
 	public Event save(Event event) {
