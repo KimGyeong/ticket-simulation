@@ -1,6 +1,5 @@
 package com.kimgyeong.ticketingsimulation.queue.application;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
@@ -22,14 +21,11 @@ import lombok.RequiredArgsConstructor;
 public class EnterQueueUseCaseImpl implements EnterQueueUseCase {
 	private final QueueRepositoryPort queueRepositoryPort;
 	private final EventRepositoryPort eventRepositoryPort;
-	private final Clock clock;
 
 	@Override
-	public Long enter(Long userId, Long eventId) {
+	public Long enter(Long userId, Long eventId, LocalDateTime now) {
 		Event event = eventRepositoryPort.findById(eventId)
 			.orElseThrow(EventNotFoundException::new);
-
-		LocalDateTime now = LocalDateTime.now(clock);
 
 		if (now.isBefore(event.ticketingStartAt())) {
 			throw new TicketingNotOpenedException();

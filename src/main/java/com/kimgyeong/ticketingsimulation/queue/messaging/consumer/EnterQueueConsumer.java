@@ -20,6 +20,6 @@ public class EnterQueueConsumer {
 	@RabbitListener(queues = QueueNames.ENTER_QUEUE)
 	public void handle(EnterQueueMessage message) {
 		log.info("Received QueueEntryAllowMessage: userId={}, eventId={}", message.userId(), message.eventId());
-		enterQueueUseCase.enter(message.userId(), message.eventId());
+		enterQueueUseCase.enter(message.userId(), message.eventId(), message.enteredAt());
 	}
 }

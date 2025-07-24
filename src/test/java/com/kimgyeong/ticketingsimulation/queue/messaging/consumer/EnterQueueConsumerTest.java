@@ -27,6 +27,6 @@ class EnterQueueConsumerTest {
 
 		consumer.handle(message);
 
-		verify(enterQueueUseCase).enter(message.userId(), message.eventId());
+		verify(enterQueueUseCase).enter(message.userId(), message.eventId(), message.enteredAt());
 	}
 }

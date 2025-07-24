@@ -1,5 +1,8 @@
 package com.kimgyeong.ticketingsimulation.queue.adapter.in.web;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +19,8 @@ import com.kimgyeong.ticketingsimulation.queue.adapter.in.web.dto.QueueRankRespo
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.CheckQueueAccessUseCase;
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.EnterQueueUseCase;
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.ReadQueueRankUseCase;
+import com.kimgyeong.ticketingsimulation.queue.messaging.message.EnterQueueMessage;
+import com.kimgyeong.ticketingsimulation.queue.messaging.producer.EnterQueueProducer;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,6 +40,8 @@ public class QueueController {
 	private final EnterQueueUseCase enterQueueUseCase;
 	private final ReadQueueRankUseCase readQueueRankUseCase;
 	private final CheckQueueAccessUseCase checkQueueAccessUseCase;
+	private final EnterQueueProducer enterQueueProducer;
+	private final Clock clock;
 
 	@PostMapping("/enter")
 	@Operation(summary = "대기열 입장")
@@ -49,8 +56,14 @@ public class QueueController {
 		@Valid @RequestBody EnterQueueRequest enterQueueRequest) {
 		Long userId = userDetails.getUserId();
 		Long eventId = enterQueueRequest.eventId();
+		LocalDateTime now = LocalDateTime.now(clock);
+
 		log.info("enter queue user id: {}, event id: {}", userId, eventId);
-		Long rank = enterQueueUseCase.enter(userId, eventId);
+		Long rank = enterQueueUseCase.enter(userId, eventId, now);
+
+		EnterQueueMessage message = new EnterQueueMessage(userId, eventId, now);
+		enterQueueProducer.send(message);
+
 		return ResponseEntity.ok(QueueRankResponse.from(rank));
 	}
 

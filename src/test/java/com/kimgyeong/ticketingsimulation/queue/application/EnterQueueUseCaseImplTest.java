@@ -25,17 +25,19 @@ import com.kimgyeong.ticketingsimulation.queue.domain.QueueEntry;
 @ExtendWith(MockitoExtension.class)
 class EnterQueueUseCaseImplTest {
 	final LocalDateTime NOW = LocalDateTime.of(2025, 1, 1, 10, 0);
-	Clock fixedClock;
+	final Clock fixedClock = Clock.fixed(NOW.toInstant(ZoneOffset.UTC), ZoneOffset.UTC);
+
 	EnterQueueUseCase enterQueueUseCase;
+
 	@Mock
 	private QueueRepositoryPort queueRepositoryPort;
+
 	@Mock
 	private EventRepositoryPort eventRepositoryPort;
 
 	@BeforeEach
 	void setUp() {
-		fixedClock = Clock.fixed(NOW.toInstant(ZoneOffset.UTC), ZoneOffset.UTC);
-		enterQueueUseCase = new EnterQueueUseCaseImpl(queueRepositoryPort, eventRepositoryPort, fixedClock);
+		enterQueueUseCase = new EnterQueueUseCaseImpl(queueRepositoryPort, eventRepositoryPort);
 	}
 
 	@Test
@@ -47,7 +49,7 @@ class EnterQueueUseCaseImplTest {
 
 		given(queueRepositoryPort.getUserRank(any(QueueEntry.class))).willReturn(0L);
 
-		Long rank = enterQueueUseCase.enter(1L, 100L);
+		Long rank = enterQueueUseCase.enter(1L, 100L, LocalDateTime.now(fixedClock));
 
 		assertThat(rank).isEqualTo(0L);
 		verify(queueRepositoryPort).enterQueue(any(QueueEntry.class));
@@ -60,7 +62,7 @@ class EnterQueueUseCaseImplTest {
 
 		given(eventRepositoryPort.findById(100L)).willReturn(Optional.of(event));
 
-		assertThatThrownBy(() -> enterQueueUseCase.enter(1L, 100L))
+		assertThatThrownBy(() -> enterQueueUseCase.enter(1L, 100L, LocalDateTime.now(fixedClock)))
 			.isInstanceOf(TicketingNotOpenedException.class);
 	}
 
@@ -71,7 +73,7 @@ class EnterQueueUseCaseImplTest {
 
 		given(eventRepositoryPort.findById(100L)).willReturn(Optional.of(event));
 
-		assertThatThrownBy(() -> enterQueueUseCase.enter(1L, 100L))
+		assertThatThrownBy(() -> enterQueueUseCase.enter(1L, 100L, LocalDateTime.now(fixedClock)))
 			.isInstanceOf(EventAlreadyStartedException.class);
 	}
 }

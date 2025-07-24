@@ -4,9 +4,17 @@ import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -18,9 +26,13 @@ import com.kimgyeong.ticketingsimulation.queue.adapter.in.web.dto.EnterQueueRequ
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.CheckQueueAccessUseCase;
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.EnterQueueUseCase;
 import com.kimgyeong.ticketingsimulation.queue.application.port.in.ReadQueueRankUseCase;
+import com.kimgyeong.ticketingsimulation.queue.messaging.producer.EnterQueueProducer;
 
 @WebMvcTest(controllers = QueueController.class)
 class QueueControllerTest extends AbstractControllerTest {
+	@MockitoBean
+	private EnterQueueProducer enterQueueProducer;
+
 	@MockitoBean
 	private EnterQueueUseCase enterQueueUseCase;
 
@@ -29,12 +41,14 @@ class QueueControllerTest extends AbstractControllerTest {
 
 	@MockitoBean
 	private CheckQueueAccessUseCase checkQueueAccessUseCase;
+	@Autowired
+	private Clock clock;
 
 	@Test
 	@WithMockCustomUser
 	void enterQueue_validRequest_returns200() throws Exception {
 		EnterQueueRequest request = new EnterQueueRequest(100L);
-		given(enterQueueUseCase.enter(anyLong(), anyLong()))
+		given(enterQueueUseCase.enter(anyLong(), anyLong(), any(LocalDateTime.class)))
 			.willReturn(0L);
 
 		mockMvc.perform(post("/api/queue/enter")
@@ -42,6 +56,22 @@ class QueueControllerTest extends AbstractControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.rank").value(0));
+
+		verify(enterQueueProducer).send(any());
+	}
+
+	@Test
+	@WithMockCustomUser
+	void enterQueue_beforeTicketingStart_returns400() throws Exception {
+		EnterQueueRequest request = new EnterQueueRequest(100L);
+		given(enterQueueUseCase.enter(anyLong(), anyLong(), any(LocalDateTime.class)))
+			.willThrow(new TicketingNotOpenedException());
+
+		mockMvc.perform(post("/api/queue/enter")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").exists());
 	}
 
 	@Test
@@ -58,10 +88,10 @@ class QueueControllerTest extends AbstractControllerTest {
 
 	@Test
 	@WithMockCustomUser
-	void enterQueue_beforeTicketingStart_returns400() throws Exception {
+	void enterQueue_afterEventStart_returns400() throws Exception {
 		EnterQueueRequest request = new EnterQueueRequest(100L);
-		given(enterQueueUseCase.enter(anyLong(), anyLong()))
-			.willThrow(new TicketingNotOpenedException());
+		given(enterQueueUseCase.enter(anyLong(), anyLong(), any(LocalDateTime.class)))
+			.willThrow(new EventAlreadyStartedException());
 
 		mockMvc.perform(post("/api/queue/enter")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -70,18 +100,12 @@ class QueueControllerTest extends AbstractControllerTest {
 			.andExpect(jsonPath("$.message").exists());
 	}
 
-	@Test
-	@WithMockCustomUser
-	void enterQueue_afterEventStart_returns400() throws Exception {
-		EnterQueueRequest request = new EnterQueueRequest(100L);
-		given(enterQueueUseCase.enter(anyLong(), anyLong()))
-			.willThrow(new EventAlreadyStartedException());
-
-		mockMvc.perform(post("/api/queue/enter")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.message").exists());
+	@TestConfiguration
+	static class ClockTestConfig {
+		@Bean
+		public Clock clock() {
+			return Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneId.of("UTC"));
+		}
 	}
 
 	@Test
