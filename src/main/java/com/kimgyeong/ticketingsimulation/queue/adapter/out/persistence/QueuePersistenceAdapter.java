@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class QueuePersistenceAdapter implements QueueRepositoryPort {
 	private static final String QUEUE_KEY_FORMAT = "event:%d:queue";
 	private static final String ACCESS_KEY_FORMAT = "event:%d:access:%d";
+	private static final String TRUE = "true";
 
 	private final StringRedisTemplate redisTemplate;
 
@@ -41,6 +42,12 @@ public class QueuePersistenceAdapter implements QueueRepositoryPort {
 		String value = redisTemplate.opsForValue().get(key);
 
 		return Boolean.parseBoolean(value);
+	}
+
+	@Override
+	public void grantAccess(QueueEntry entry) {
+		String key = getAccessKey(entry);
+		redisTemplate.opsForValue().set(key, TRUE);
 	}
 
 	private String getQueueKey(QueueEntry entry) {

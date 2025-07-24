@@ -52,4 +52,11 @@ class QueuePersistenceAdapterTest extends RedisTestContainerConfig {
 		QueueEntry entry = new QueueEntry(1L, 100L, null);
 		assertThat(queueRepositoryPort.hasAccess(entry)).isFalse();
 	}
+
+	@Test
+	void grantAccess() {
+		queueRepositoryPort.grantAccess(entry);
+		assertThat(redisTemplate.opsForValue()
+			.get(String.format("event:%d:access:%d", entry.eventId(), entry.userId()))).isEqualTo("true");
+	}
 }
