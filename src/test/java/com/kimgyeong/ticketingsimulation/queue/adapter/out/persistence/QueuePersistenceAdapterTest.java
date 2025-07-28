@@ -55,8 +55,17 @@ class QueuePersistenceAdapterTest extends RedisTestContainerConfig {
 
 	@Test
 	void grantAccess() {
+		queueRepositoryPort.enterQueue(entry);
+
 		queueRepositoryPort.grantAccess(entry);
-		assertThat(redisTemplate.opsForValue()
-			.get(String.format("event:%d:access:%d", entry.eventId(), entry.userId()))).isEqualTo("true");
+
+		String accessKey = String.format("event:%d:access:%d", entry.eventId(), entry.userId());
+		String queueKey = String.format("event:%d:queue", entry.eventId());
+
+		String access = redisTemplate.opsForValue().get(accessKey);
+		Long rank = redisTemplate.opsForZSet().rank(queueKey, entry.userId().toString());
+
+		assertThat(access).isEqualTo("true");
+		assertThat(rank).isNull();
 	}
 }

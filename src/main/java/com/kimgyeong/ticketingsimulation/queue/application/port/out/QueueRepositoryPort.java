@@ -8,4 +8,6 @@ public interface QueueRepositoryPort {
 	boolean hasAccess(QueueEntry entry);
 
 	void grantAccess(QueueEntry entry);
+
+	int countGrantedUsers(Long eventId);
 }

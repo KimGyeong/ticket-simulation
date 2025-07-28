@@ -20,8 +20,10 @@ import com.kimgyeong.ticketingsimulation.queue.domain.QueueEntry;
 class GrantQueueAccessUseCaseImplTest {
 	private final Clock fixedClock = Clock.fixed(LocalDateTime.of(2025, 1, 1, 10, 0).toInstant(ZoneOffset.UTC),
 		ZoneOffset.UTC);
+
 	@Mock
 	private QueueRepositoryPort port;
+
 	private GrantQueueAccessUseCase useCase;
 
 	@BeforeEach
@@ -34,8 +36,20 @@ class GrantQueueAccessUseCaseImplTest {
 		Long userId = 1L;
 		Long eventId = 100L;
 
+		when(port.countGrantedUsers(eventId)).thenReturn(999);
 		useCase.grantAccess(userId, eventId);
 
-		verify(port).grantAccess(new QueueEntry(userId, eventId, LocalDateTime.now(fixedClock)));
+		verify(port, times(1)).grantAccess(any(QueueEntry.class));
+	}
+
+	@Test
+	void grantAccess_AccessDenied() {
+		Long userId = 1L;
+		Long eventId = 100L;
+
+		when(port.countGrantedUsers(eventId)).thenReturn(1000);
+		useCase.grantAccess(userId, eventId);
+
+		verify(port, never()).grantAccess(any(QueueEntry.class));
 	}
 }

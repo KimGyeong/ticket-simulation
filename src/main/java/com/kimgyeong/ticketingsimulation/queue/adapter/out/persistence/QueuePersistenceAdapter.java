@@ -17,6 +17,7 @@ public class QueuePersistenceAdapter implements QueueRepositoryPort {
 	private static final String QUEUE_KEY_FORMAT = "event:%d:queue";
 	private static final String ACCESS_KEY_FORMAT = "event:%d:access:%d";
 	private static final String TRUE = "true";
+	public static final String ACCESS_KEY_ALL_FORMAT = "event:%d:access:*";
 
 	private final StringRedisTemplate redisTemplate;
 
@@ -46,8 +47,21 @@ public class QueuePersistenceAdapter implements QueueRepositoryPort {
 
 	@Override
 	public void grantAccess(QueueEntry entry) {
-		String key = getAccessKey(entry);
-		redisTemplate.opsForValue().set(key, TRUE);
+		String queueKey = getQueueKey(entry);
+		String accessKey = getAccessKey(entry);
+
+		redisTemplate.opsForValue().set(accessKey, TRUE);
+
+		redisTemplate.opsForZSet().remove(queueKey, entry.userId().toString());
+	}
+
+	@Override
+	public int countGrantedUsers(Long eventId) {
+		String pattern = String.format(ACCESS_KEY_ALL_FORMAT, eventId);
+		return redisTemplate.keys(pattern).stream()
+			.filter(key -> TRUE.equals(redisTemplate.opsForValue().get(key)))
+			.toList()
+			.size();
 	}
 
 	private String getQueueKey(QueueEntry entry) {
