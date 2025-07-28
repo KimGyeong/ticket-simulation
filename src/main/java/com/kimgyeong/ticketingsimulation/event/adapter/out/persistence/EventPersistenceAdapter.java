@@ -1,5 +1,6 @@
 package com.kimgyeong.ticketingsimulation.event.adapter.out.persistence;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,5 +43,13 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
 	@Override
 	public void deleteById(Long id) {
 		eventRepository.deleteById(id);
+	}
+
+	@Override
+	public List<Event> findEventsInTicketingPeriod(LocalDateTime now) {
+		return eventRepository.findEventsInTicketingPeriod(now)
+			.stream()
+			.map(EventEntityMapper::toDomain)
+			.toList();
 	}
 }

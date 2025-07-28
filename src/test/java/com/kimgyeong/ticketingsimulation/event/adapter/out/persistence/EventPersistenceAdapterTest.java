@@ -25,13 +25,14 @@ class EventPersistenceAdapterTest {
 	@InjectMocks
 	private EventPersistenceAdapter adapter;
 
+	private final Event event = new Event(null, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
+		LocalDateTime.now().plusDays(2), 100, 1L);
+
+	private final EventEntity entity = new EventEntity(1L, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
+		LocalDateTime.now().plusDays(2), 100, 1L);
+
 	@Test
 	void save() {
-		Event event = new Event(null, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(2), 100, 1L);
-		EventEntity entity = new EventEntity(1L, event.title(), event.description(), event.imageUrl(),
-			event.ticketingStartAt(), event.eventStartAt(), event.maxAttendees(), 1L);
-
 		when(repository.save(any())).thenReturn(entity);
 
 		Event result = adapter.save(event);
@@ -48,9 +49,6 @@ class EventPersistenceAdapterTest {
 
 	@Test
 	void findAll() {
-		EventEntity entity = new EventEntity(1L, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(2), 100, 1L);
-
 		when(repository.findAll()).thenReturn(List.of(entity));
 
 		List<Event> result = adapter.findAll();
@@ -61,9 +59,6 @@ class EventPersistenceAdapterTest {
 
 	@Test
 	void findById() {
-		EventEntity entity = new EventEntity(1L, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(2), 100, 1L);
-
 		when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
 
 		Optional<Event> result = adapter.findById(1L);
@@ -77,5 +72,15 @@ class EventPersistenceAdapterTest {
 		adapter.deleteById(1L);
 
 		verify(repository).deleteById(1L);
+	}
+
+	@Test
+	void findEventsInTicketingPeriod() {
+		when(repository.findEventsInTicketingPeriod(any(LocalDateTime.class))).thenReturn(List.of(entity));
+
+		List<Event> result = adapter.findEventsInTicketingPeriod(LocalDateTime.now());
+
+		assertThat(result.get(0).id()).isEqualTo(entity.getId());
+		assertThat(result.get(0).title()).isEqualTo(entity.getTitle());
 	}
 }

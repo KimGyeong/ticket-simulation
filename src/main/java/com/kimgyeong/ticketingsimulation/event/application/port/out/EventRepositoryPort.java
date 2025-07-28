@@ -1,5 +1,6 @@
 package com.kimgyeong.ticketingsimulation.event.application.port.out;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,4 +14,6 @@ public interface EventRepositoryPort {
 	Optional<Event> findById(Long id);
 
 	void deleteById(Long id);
+
+	List<Event> findEventsInTicketingPeriod(LocalDateTime now);
 }
