@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.ReleaseSeatUseCase;
 
 @ExtendWith(MockitoExtension.class)
-class SeatReleaseSchedulerTest {
+class ReleaseSeatSchedulerTest {
 
 	@Mock
 	private ReleaseSeatUseCase releaseSeatUseCase;
