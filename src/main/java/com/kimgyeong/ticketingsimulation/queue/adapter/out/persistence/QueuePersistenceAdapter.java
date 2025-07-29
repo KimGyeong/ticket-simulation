@@ -1,6 +1,11 @@
 package com.kimgyeong.ticketingsimulation.queue.adapter.out.persistence;
 
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -62,6 +67,33 @@ public class QueuePersistenceAdapter implements QueueRepositoryPort {
 			.filter(key -> TRUE.equals(redisTemplate.opsForValue().get(key)))
 			.toList()
 			.size();
+	}
+
+	@Override
+	public List<QueueEntry> getTopEntries(Long eventId, long count) {
+		String key = String.format(QUEUE_KEY_FORMAT, eventId);
+
+		Set<String> userIds = redisTemplate.opsForZSet()
+			.range(key, 0, count - 1);
+
+		if (userIds == null || userIds.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		return userIds.stream()
+			.map(userIdString -> {
+				Long userId = Long.valueOf(userIdString);
+				Double score = redisTemplate.opsForZSet().score(key, userIdString);
+
+				if (score == null) {
+					return null;
+				}
+
+				LocalDateTime enteredAt = LocalDateTime.ofEpochSecond(score.longValue(), 0, ZoneOffset.UTC);
+				return new QueueEntry(userId, eventId, enteredAt);
+			})
+			.filter(Objects::nonNull)
+			.toList();
 	}
 
 	private String getQueueKey(QueueEntry entry) {
