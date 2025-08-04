@@ -9,6 +9,7 @@ import com.kimgyeong.ticketingsimulation.event.application.port.out.SeatReposito
 import com.kimgyeong.ticketingsimulation.event.domain.model.Seat;
 import com.kimgyeong.ticketingsimulation.global.exception.SeatAccessDeniedException;
 import com.kimgyeong.ticketingsimulation.global.exception.SeatNotFoundException;
+import com.kimgyeong.ticketingsimulation.queue.application.port.out.QueueRepositoryPort;
 import com.kimgyeong.ticketingsimulation.ticket.application.port.in.PurchaseTicketUseCase;
 import com.kimgyeong.ticketingsimulation.ticket.application.port.out.TicketRepositoryPort;
 import com.kimgyeong.ticketingsimulation.ticket.domain.model.Ticket;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class PurchaseTicketUseCaseImpl implements PurchaseTicketUseCase {
 	private final TicketRepositoryPort ticketRepositoryPort;
 	private final SeatRepositoryPort seatRepositoryPort;
+	private final QueueRepositoryPort queueRepositoryPort;
 	private final Clock clock;
 
 	@Override
@@ -43,7 +45,10 @@ public class PurchaseTicketUseCaseImpl implements PurchaseTicketUseCase {
 			TicketStatus.PURCHASED
 		);
 
-		return ticketRepositoryPort.save(ticket)
-			.id();
+		Ticket savedTicket = ticketRepositoryPort.save(ticket);
+
+		queueRepositoryPort.removeFromAccessQueue(eventId, userId);
+
+		return savedTicket.id();
 	}
 }
