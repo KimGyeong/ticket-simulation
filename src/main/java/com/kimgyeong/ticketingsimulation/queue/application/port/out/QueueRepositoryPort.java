@@ -16,4 +16,6 @@ public interface QueueRepositoryPort {
 	int countGrantedUsers(Long eventId);
 
 	List<QueueEntry> getTopEntries(Long eventId, long count);
+
+	void removeFromAccessQueue(Long eventId, Long userId);
 }

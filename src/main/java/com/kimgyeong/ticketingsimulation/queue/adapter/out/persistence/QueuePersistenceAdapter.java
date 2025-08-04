@@ -96,6 +96,12 @@ public class QueuePersistenceAdapter implements QueueRepositoryPort {
 			.toList();
 	}
 
+	@Override
+	public void removeFromAccessQueue(Long eventId, Long userId) {
+		String key = getAccessKey(eventId, userId);
+		redisTemplate.opsForZSet().remove(key, userId.toString());
+	}
+
 	private String getQueueKey(QueueEntry entry) {
 		return String.format(QUEUE_KEY_FORMAT, entry.eventId());
 	}
@@ -106,5 +112,9 @@ public class QueuePersistenceAdapter implements QueueRepositoryPort {
 
 	private String getAccessKey(QueueEntry entry) {
 		return String.format(ACCESS_KEY_FORMAT, entry.eventId(), entry.userId());
+	}
+
+	private String getAccessKey(Long eventId, Long userId) {
+		return String.format(ACCESS_KEY_FORMAT, eventId, userId);
 	}
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,5 +88,18 @@ class QueuePersistenceAdapterTest extends RedisTestContainerConfig {
 		assertThat(topEntries).hasSize(2);
 		assertThat(topEntries.get(0).userId()).isEqualTo(1L);
 		assertThat(topEntries.get(1).userId()).isEqualTo(2L);
+	}
+
+	@Test
+	void removeFromAccessQueue() {
+		Long eventId = 1L;
+		Long userId = 100L;
+		String accessKey = String.format("event:%d:access:%d", eventId, userId);
+		redisTemplate.opsForZSet().add(accessKey, String.valueOf(userId), System.currentTimeMillis());
+
+		queueRepositoryPort.removeFromAccessQueue(eventId, userId);
+
+		Set<String> result = redisTemplate.opsForZSet().range(accessKey, 0, -1);
+		assertThat(result).doesNotContain(String.valueOf(userId));
 	}
 }
