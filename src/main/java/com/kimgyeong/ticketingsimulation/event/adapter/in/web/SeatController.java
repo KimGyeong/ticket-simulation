@@ -50,6 +50,7 @@ public class SeatController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "좌석 점유 성공"),
 		@ApiResponse(responseCode = "400", description = "이미 점유되었거나 예약된 좌석"),
+		@ApiResponse(responseCode = "403", description = "입장 허용되지 않은 사용자"),
 		@ApiResponse(responseCode = "404", description = "좌석을 찾을 수 없음"),
 		@ApiResponse(responseCode = "500", description = "서버 오류")
 	})

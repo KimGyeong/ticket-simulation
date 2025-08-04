@@ -6,8 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kimgyeong.ticketingsimulation.event.application.port.in.HoldSeatUseCase;
 import com.kimgyeong.ticketingsimulation.event.application.port.out.SeatRepositoryPort;
 import com.kimgyeong.ticketingsimulation.event.domain.model.Seat;
+import com.kimgyeong.ticketingsimulation.global.exception.NotInAccessQueueException;
 import com.kimgyeong.ticketingsimulation.global.exception.SeatNotFoundException;
 import com.kimgyeong.ticketingsimulation.global.lock.RedisLockService;
+import com.kimgyeong.ticketingsimulation.queue.application.port.out.QueueRepositoryPort;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 public class HoldSeatUseCaseImpl implements HoldSeatUseCase {
 	private final SeatRepositoryPort seatRepository;
+	private final QueueRepositoryPort queueRepository;
 	private final RedisLockService redisLockService;
 
 	@Override
@@ -26,6 +29,11 @@ public class HoldSeatUseCaseImpl implements HoldSeatUseCase {
 		redisLockService.runWithLock(lockKey, 1, 3, () -> {
 			Seat seat = seatRepository.findById(seatId)
 				.orElseThrow(SeatNotFoundException::new);
+
+			Long eventId = seat.eventId();
+			if (!queueRepository.hasAccess(eventId, userId)) {
+				throw new NotInAccessQueueException();
+			}
 
 			Seat heldSeat = seat.hold(userId);
 			seatRepository.save(heldSeat);

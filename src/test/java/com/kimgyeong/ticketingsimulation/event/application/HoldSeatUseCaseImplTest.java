@@ -16,28 +16,36 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.kimgyeong.ticketingsimulation.event.application.port.out.SeatRepositoryPort;
 import com.kimgyeong.ticketingsimulation.event.domain.model.Seat;
 import com.kimgyeong.ticketingsimulation.event.domain.model.SeatStatus;
+import com.kimgyeong.ticketingsimulation.global.exception.NotInAccessQueueException;
 import com.kimgyeong.ticketingsimulation.global.exception.SeatAlreadyHeldException;
 import com.kimgyeong.ticketingsimulation.global.exception.SeatNotFoundException;
 import com.kimgyeong.ticketingsimulation.global.lock.RedisLockService;
+import com.kimgyeong.ticketingsimulation.queue.application.port.out.QueueRepositoryPort;
 
 @ExtendWith(MockitoExtension.class)
 class HoldSeatUseCaseImplTest {
 
 	private final Long seatId = 1L;
 	private final Long userId = 100L;
+
 	@Mock
 	private SeatRepositoryPort seatRepository;
+
+	@Mock
+	private QueueRepositoryPort queueRepository;
+
 	@Mock
 	private RedisLockService redisLockService;
+
 	@InjectMocks
 	private HoldSeatUseCaseImpl holdSeatUseCase;
 
 	@Test
 	void holdSeat_success() {
 		Seat availableSeat = new Seat(seatId, 10L, SeatStatus.AVAILABLE, 1, null, null);
-		Seat expectedHeldSeat = availableSeat.hold(userId);
 
 		when(seatRepository.findById(seatId)).thenReturn(Optional.of(availableSeat));
+		when(queueRepository.hasAccess(anyLong(), anyLong())).thenReturn(true);
 
 		doAnswer(invocation -> {
 			Callable<?> task = invocation.getArgument(3);
@@ -68,6 +76,7 @@ class HoldSeatUseCaseImplTest {
 		Seat heldSeat = new Seat(seatId, 10L, SeatStatus.TEMPORARY_HOLD, 1, LocalDateTime.now(), 999L);
 
 		when(seatRepository.findById(seatId)).thenReturn(Optional.of(heldSeat));
+		when(queueRepository.hasAccess(anyLong(), anyLong())).thenReturn(true);
 
 		doAnswer(invocation -> {
 			Callable<?> task = invocation.getArgument(3);
@@ -76,5 +85,21 @@ class HoldSeatUseCaseImplTest {
 		}).when(redisLockService).runWithLock(anyString(), anyInt(), anyInt(), any());
 
 		assertThrows(SeatAlreadyHeldException.class, () -> holdSeatUseCase.holdSeat(seatId, userId));
+	}
+
+	@Test
+	void holdSeat_whenUserIsNotInAccessQueue() {
+		Seat availableSeat = new Seat(seatId, 10L, SeatStatus.AVAILABLE, 1, null, null);
+
+		when(seatRepository.findById(seatId)).thenReturn(Optional.of(availableSeat));
+		when(queueRepository.hasAccess(anyLong(), anyLong())).thenReturn(false);
+
+		doAnswer(invocation -> {
+			Callable<?> task = invocation.getArgument(3);
+			task.call();
+			return null;
+		}).when(redisLockService).runWithLock(anyString(), anyInt(), anyInt(), any());
+
+		assertThrows(NotInAccessQueueException.class, () -> holdSeatUseCase.holdSeat(seatId, userId));
 	}
 }

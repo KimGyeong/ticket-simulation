@@ -11,6 +11,8 @@ public interface QueueRepositoryPort {
 
 	boolean hasAccess(QueueEntry entry);
 
+	boolean hasAccess(Long eventId, Long userId);
+
 	void grantAccess(QueueEntry entry);
 
 	int countGrantedUsers(Long eventId);

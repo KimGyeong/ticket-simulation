@@ -51,6 +51,14 @@ public class QueuePersistenceAdapter implements QueueRepositoryPort {
 	}
 
 	@Override
+	public boolean hasAccess(Long eventId, Long userId) {
+		String key = getAccessKey(eventId, userId);
+		String value = redisTemplate.opsForValue().get(key);
+
+		return Boolean.parseBoolean(value);
+	}
+
+	@Override
 	public void grantAccess(QueueEntry entry) {
 		String queueKey = getQueueKey(entry);
 		String accessKey = getAccessKey(entry);
