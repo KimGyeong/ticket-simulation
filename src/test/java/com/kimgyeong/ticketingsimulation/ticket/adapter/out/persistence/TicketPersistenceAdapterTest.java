@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,12 +26,12 @@ class TicketPersistenceAdapterTest {
 	@InjectMocks
 	private TicketPersistenceAdapter adapter;
 
+	Ticket ticket = new Ticket(100L, 1L, 10L, 5L, LocalDateTime.now(), null, TicketStatus.PURCHASED);
+	TicketEntity savedEntity = new TicketEntity(100L, 1L, 10L, 5L, ticket.purchasedAt(), null,
+		TicketStatus.PURCHASED);
+
 	@Test
 	void save() {
-		Ticket ticket = new Ticket(null, 1L, 10L, 5L, LocalDateTime.now(), null, TicketStatus.PURCHASED);
-		TicketEntity savedEntity = new TicketEntity(100L, 1L, 10L, 5L, ticket.purchasedAt(), null,
-			TicketStatus.PURCHASED);
-
 		when(repository.save(any(TicketEntity.class))).thenReturn(savedEntity);
 
 		Ticket result = adapter.save(ticket);
@@ -43,15 +44,20 @@ class TicketPersistenceAdapterTest {
 
 	@Test
 	void findTicketsByUserId() {
-		Ticket ticket = new Ticket(100L, 1L, 10L, 5L, LocalDateTime.now(), null, TicketStatus.PURCHASED);
-		TicketEntity savedEntity = new TicketEntity(100L, 1L, 10L, 5L, ticket.purchasedAt(), null,
-			TicketStatus.PURCHASED);
-
 		when(repository.findAllByUserIdOrderByCreatedAtDesc(anyLong())).thenReturn(List.of(savedEntity));
 
 		List<Ticket> result = adapter.findTicketsByUserId(1L);
 
 		assertThat(result.get(0).userId()).isEqualTo(savedEntity.getUserId());
 		assertThat(result.get(0).seatId()).isEqualTo(savedEntity.getSeatId());
+	}
+
+	@Test
+	void findById() {
+		when(repository.findById(anyLong())).thenReturn(Optional.of(savedEntity));
+
+		Optional<Ticket> result = adapter.findById(100L);
+		assertThat(result).isNotEmpty();
+		assertThat(result.get().eventId()).isEqualTo(ticket.eventId());
 	}
 }
