@@ -4,6 +4,9 @@ import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -12,12 +15,19 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import com.kimgyeong.ticketingsimulation.global.controller.AbstractControllerTest;
 import com.kimgyeong.ticketingsimulation.global.security.annotation.WithMockCustomUser;
 import com.kimgyeong.ticketingsimulation.ticket.adapter.in.web.dto.PurchaseTicketRequest;
+import com.kimgyeong.ticketingsimulation.ticket.application.model.TicketResult;
 import com.kimgyeong.ticketingsimulation.ticket.application.port.in.PurchaseTicketUseCase;
+import com.kimgyeong.ticketingsimulation.ticket.application.port.in.ReadTicketUseCase;
+import com.kimgyeong.ticketingsimulation.ticket.domain.model.Ticket;
+import com.kimgyeong.ticketingsimulation.ticket.domain.model.TicketStatus;
 
 @WebMvcTest(TicketController.class)
 class TicketControllerTest extends AbstractControllerTest {
 	@MockitoBean
 	private PurchaseTicketUseCase purchaseTicketUseCase;
+
+	@MockitoBean
+	private ReadTicketUseCase readTicketUseCase;
 
 	@Test
 	@WithMockCustomUser
@@ -31,5 +41,42 @@ class TicketControllerTest extends AbstractControllerTest {
 				.content(objectMapper.writeValueAsString(purchaseTicketRequest)))
 			.andExpect(status().isCreated())
 			.andExpect(header().string("Location", "/api/tickets/1"));
+	}
+
+	@Test
+	@WithMockCustomUser
+	void findAllByUserId_validRequest_returns200() throws Exception {
+		Ticket ticket1 = new Ticket(
+			1L, 1L, 100L, 1000L,
+			LocalDateTime.of(2025, 8, 1, 12, 0),
+			null,
+			TicketStatus.PURCHASED
+		);
+
+		Ticket ticket2 = new Ticket(
+			2L, 1L, 100L, 1001L,
+			LocalDateTime.of(2025, 8, 2, 12, 0),
+			null,
+			TicketStatus.PURCHASED
+		);
+
+		List<TicketResult> results = List.of(
+			new TicketResult(ticket1, 10),
+			new TicketResult(ticket2, 11)
+		);
+
+		given(readTicketUseCase.findTicketsByUserId(1L)).willReturn(results);
+
+		// when & then
+		mockMvc.perform(get("/api/tickets/me")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.ticketResponses").isArray())
+			.andExpect(jsonPath("$.ticketResponses.length()").value(2))
+			.andExpect(jsonPath("$.ticketResponses[0].id").value(1))
+			.andExpect(jsonPath("$.ticketResponses[0].seatNumber").value(10))
+			.andExpect(jsonPath("$.ticketResponses[0].status").value("PURCHASED"))
+			.andExpect(jsonPath("$.ticketResponses[1].id").value(2))
+			.andExpect(jsonPath("$.ticketResponses[1].seatNumber").value(11));
 	}
 }
