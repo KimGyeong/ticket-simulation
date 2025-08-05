@@ -1,5 +1,7 @@
 package com.kimgyeong.ticketingsimulation.ticket.adapter.out.persistence;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.kimgyeong.ticketingsimulation.ticket.adapter.out.persistence.entity.TicketEntity;
@@ -20,5 +22,13 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
 		TicketEntity entity = TicketEntityMapper.toEntity(ticket);
 		TicketEntity savedTicketEntity = ticketRepository.save(entity);
 		return TicketEntityMapper.toDomain(savedTicketEntity);
+	}
+
+	@Override
+	public List<Ticket> findTicketsByUserId(Long userId) {
+		List<TicketEntity> entities = ticketRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+		return entities.stream()
+			.map(TicketEntityMapper::toDomain)
+			.toList();
 	}
 }

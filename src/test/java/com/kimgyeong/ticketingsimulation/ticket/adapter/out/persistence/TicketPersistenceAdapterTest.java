@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,5 +39,19 @@ class TicketPersistenceAdapterTest {
 
 		ArgumentCaptor<TicketEntity> captor = ArgumentCaptor.forClass(TicketEntity.class);
 		verify(repository).save(captor.capture());
+	}
+
+	@Test
+	void findTicketsByUserId() {
+		Ticket ticket = new Ticket(100L, 1L, 10L, 5L, LocalDateTime.now(), null, TicketStatus.PURCHASED);
+		TicketEntity savedEntity = new TicketEntity(100L, 1L, 10L, 5L, ticket.purchasedAt(), null,
+			TicketStatus.PURCHASED);
+
+		when(repository.findAllByUserIdOrderByCreatedAtDesc(anyLong())).thenReturn(List.of(savedEntity));
+
+		List<Ticket> result = adapter.findTicketsByUserId(1L);
+
+		assertThat(result.get(0).userId()).isEqualTo(savedEntity.getUserId());
+		assertThat(result.get(0).seatId()).isEqualTo(savedEntity.getSeatId());
 	}
 }
