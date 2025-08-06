@@ -25,8 +25,8 @@ public record Seat(Long id, Long eventId, SeatStatus status, int number, LocalDa
 
 	public Seat release() {
 		return switch (status) {
-			case TEMPORARY_HOLD -> new Seat(id, eventId, SeatStatus.AVAILABLE, number, null, null);
-			case AVAILABLE, BOOKED -> this; // release 대상이 아님, 그대로 반환
+			case AVAILABLE -> this;
+			case TEMPORARY_HOLD, BOOKED -> new Seat(id, eventId, SeatStatus.AVAILABLE, number, null, null);
 		};
 	}
 

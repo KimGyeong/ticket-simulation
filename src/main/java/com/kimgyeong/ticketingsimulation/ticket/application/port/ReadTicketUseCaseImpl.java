@@ -3,6 +3,7 @@ package com.kimgyeong.ticketingsimulation.ticket.application.port;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kimgyeong.ticketingsimulation.event.application.port.out.SeatRepositoryPort;
 import com.kimgyeong.ticketingsimulation.event.domain.model.Seat;
@@ -22,6 +23,7 @@ public class ReadTicketUseCaseImpl implements ReadTicketUseCase {
 	private final SeatRepositoryPort seatRepositoryPort;
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<TicketResult> findTicketsByUserId(Long userId) {
 		List<Ticket> tickets = ticketRepositoryPort.findTicketsByUserId(userId);
 

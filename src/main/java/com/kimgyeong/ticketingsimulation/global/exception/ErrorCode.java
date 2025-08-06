@@ -19,6 +19,10 @@ public enum ErrorCode {
 	EVENT_ALREADY_STARTED("E013", "이벤트가 시작된 티켓팅에 접속할 수 없습니다.", HttpStatus.BAD_REQUEST),
 	SEAT_ACCESS_DENIED("E014", "본인이 점유하지 않은 좌석은 구매할 수 없습니다.", HttpStatus.FORBIDDEN),
 	NOT_IN_ACCESS_QUEUE("E015", "입장 권한이 없습니다.", HttpStatus.FORBIDDEN),
+	TICKET_NOT_FOUND("E016", "존재하지 않는 티켓입니다.", HttpStatus.NOT_FOUND),
+	TICKET_ACCESS_DENIED("E017", "본인이 구매하지 않은 티켓은 환불할 수 없습니다.", HttpStatus.FORBIDDEN),
+	TICKET_ALREADY_REFUNDED("E018", "이미 환불된 티켓입니다.", HttpStatus.BAD_REQUEST),
+	TICKET_CANNOT_REFUND_AFTER_EVENT_START("E019", "이벤트가 시작된 티켓은 환불할 수 없습니다.", HttpStatus.BAD_REQUEST),
 	INTERNAL_SERVER_ERROR("E999", "서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
 	private final String code;
