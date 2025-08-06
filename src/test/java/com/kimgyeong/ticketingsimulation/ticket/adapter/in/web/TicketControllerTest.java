@@ -13,11 +13,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.kimgyeong.ticketingsimulation.global.controller.AbstractControllerTest;
+import com.kimgyeong.ticketingsimulation.global.exception.TicketAccessDeniedException;
+import com.kimgyeong.ticketingsimulation.global.exception.TicketAlreadyRefundedException;
+import com.kimgyeong.ticketingsimulation.global.exception.TicketNotFoundException;
 import com.kimgyeong.ticketingsimulation.global.security.annotation.WithMockCustomUser;
 import com.kimgyeong.ticketingsimulation.ticket.adapter.in.web.dto.PurchaseTicketRequest;
 import com.kimgyeong.ticketingsimulation.ticket.application.model.TicketResult;
+import com.kimgyeong.ticketingsimulation.ticket.application.port.TicketCannotRefundAfterEventStartException;
 import com.kimgyeong.ticketingsimulation.ticket.application.port.in.PurchaseTicketUseCase;
 import com.kimgyeong.ticketingsimulation.ticket.application.port.in.ReadTicketUseCase;
+import com.kimgyeong.ticketingsimulation.ticket.application.port.in.RefundTicketUseCase;
 import com.kimgyeong.ticketingsimulation.ticket.domain.model.Ticket;
 import com.kimgyeong.ticketingsimulation.ticket.domain.model.TicketStatus;
 
@@ -28,6 +33,9 @@ class TicketControllerTest extends AbstractControllerTest {
 
 	@MockitoBean
 	private ReadTicketUseCase readTicketUseCase;
+
+	@MockitoBean
+	private RefundTicketUseCase refundTicketUseCase;
 
 	@Test
 	@WithMockCustomUser
@@ -78,5 +86,61 @@ class TicketControllerTest extends AbstractControllerTest {
 			.andExpect(jsonPath("$.ticketResponses[0].status").value("PURCHASED"))
 			.andExpect(jsonPath("$.ticketResponses[1].id").value(2))
 			.andExpect(jsonPath("$.ticketResponses[1].seatNumber").value(11));
+	}
+
+	@Test
+	@WithMockCustomUser
+	void refundTicket_success() throws Exception {
+		Long ticketId = 1L;
+		mockMvc.perform(post("/api/tickets/{ticketId}/refund", ticketId))
+			.andExpect(status().isNoContent());
+	}
+
+	@Test
+	@WithMockCustomUser
+	void refundTicket_alreadyRefunded() throws Exception {
+		Long ticketId = 1L;
+		Long userId = 1L;
+		doThrow(new TicketAlreadyRefundedException())
+			.when(refundTicketUseCase).refund(ticketId, userId);
+
+		mockMvc.perform(post("/api/tickets/{ticketId}/refund", ticketId))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithMockCustomUser
+	void refundTicket_forbidden() throws Exception {
+		Long ticketId = 1L;
+		Long userId = 1L;
+		doThrow(new TicketAccessDeniedException())
+			.when(refundTicketUseCase).refund(ticketId, userId);
+
+		mockMvc.perform(post("/api/tickets/{ticketId}/refund", ticketId))
+			.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMockCustomUser
+	void refundTicket_ticketNotFound() throws Exception {
+		Long ticketId = 1L;
+		Long userId = 1L;
+		doThrow(new TicketNotFoundException())
+			.when(refundTicketUseCase).refund(ticketId, userId);
+
+		mockMvc.perform(post("/api/tickets/{ticketId}/refund", ticketId))
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockCustomUser
+	void refundTicket_eventStarted() throws Exception {
+		Long ticketId = 1L;
+		Long userId = 1L;
+		doThrow(new TicketCannotRefundAfterEventStartException())
+			.when(refundTicketUseCase).refund(ticketId, userId);
+
+		mockMvc.perform(post("/api/tickets/{ticketId}/refund", ticketId))
+			.andExpect(status().isBadRequest());
 	}
 }
