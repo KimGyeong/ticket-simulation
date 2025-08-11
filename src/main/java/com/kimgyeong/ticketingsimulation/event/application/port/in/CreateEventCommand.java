@@ -8,6 +8,7 @@ public record CreateEventCommand(
 	String imageUrl,
 	LocalDateTime ticketingStartAt,
 	LocalDateTime eventStartAt,
+	long virtualRequestCount,
 	int maxAttendees
 ) {
 }

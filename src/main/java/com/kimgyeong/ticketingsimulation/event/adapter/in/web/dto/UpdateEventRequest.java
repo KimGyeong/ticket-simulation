@@ -7,6 +7,7 @@ import com.kimgyeong.ticketingsimulation.event.application.port.in.UpdateEventCo
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record UpdateEventRequest(
 	@NotBlank(message = "제목은 필수입니다.")
@@ -24,6 +25,9 @@ public record UpdateEventRequest(
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	LocalDateTime eventStartAt,
 
+	@PositiveOrZero(message = "가상 요청 수는 양수여야 합니다.")
+	Long virtualRequestCount,
+
 	@Min(value = 1, message = "최대 수용 인원은 1명 이상이어야 합니다.")
 	int maxAttendees
 ) {
@@ -35,6 +39,7 @@ public record UpdateEventRequest(
 			imageUrl,
 			ticketingStartAt,
 			eventStartAt,
+			virtualRequestCount,
 			maxAttendees
 		);
 	}

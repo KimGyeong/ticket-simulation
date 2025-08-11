@@ -43,7 +43,7 @@ class EnterQueueUseCaseImplTest {
 	@Test
 	void enter() {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now(fixedClock).minusMinutes(10),
-			LocalDateTime.now(fixedClock).plusMinutes(30), 100, 1L);
+			LocalDateTime.now(fixedClock).plusMinutes(30), 100, 1000L, 1L);
 
 		given(eventRepositoryPort.findById(100L)).willReturn(Optional.of(event));
 
@@ -58,7 +58,7 @@ class EnterQueueUseCaseImplTest {
 	@Test
 	void enter_whenTicketingNotOpen() {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now(fixedClock).plusMinutes(10),
-			LocalDateTime.now(fixedClock).plusMinutes(30), 100, 1L);
+			LocalDateTime.now(fixedClock).plusMinutes(30), 100, 1000L, 1L);
 
 		given(eventRepositoryPort.findById(100L)).willReturn(Optional.of(event));
 
@@ -69,7 +69,7 @@ class EnterQueueUseCaseImplTest {
 	@Test
 	void enter_whenEventStarted() {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now(fixedClock).minusMinutes(40),
-			LocalDateTime.now(fixedClock).minusMinutes(30), 100, 1L);
+			LocalDateTime.now(fixedClock).minusMinutes(30), 100, 1000L, 1L);
 
 		given(eventRepositoryPort.findById(100L)).willReturn(Optional.of(event));
 

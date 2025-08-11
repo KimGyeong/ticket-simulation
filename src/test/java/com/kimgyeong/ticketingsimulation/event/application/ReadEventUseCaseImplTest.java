@@ -31,7 +31,7 @@ class ReadEventUseCaseImplTest {
 	@Test
 	void findById() {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(1), 100, 1L);
+			LocalDateTime.now().plusDays(1), 100, 1000L, 1L);
 		given(eventPort.findById(anyLong())).willReturn(Optional.of(event));
 		given(seatPort.countAvailableByEventId(anyLong())).willReturn(5L);
 

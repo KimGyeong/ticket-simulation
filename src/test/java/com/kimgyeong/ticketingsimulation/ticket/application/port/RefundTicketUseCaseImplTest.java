@@ -55,7 +55,7 @@ class RefundTicketUseCaseImplTest {
 		Ticket originalTicket = new Ticket(ticketId, userId, eventId, seatId, now.minusDays(1), null,
 			TicketStatus.PURCHASED);
 		Event event = new Event(eventId, "테스트 이벤트", "테스트 설명", "테스트 이미지", now.minusHours(1), now.plusHours(1), 100,
-			100L);
+			1000L, 100L);
 		Seat seat = new Seat(seatId, eventId, SeatStatus.BOOKED, 1, now.minusDays(1), userId);
 
 		when(ticketRepositoryPort.findById(ticketId)).thenReturn(Optional.of(originalTicket));
@@ -115,7 +115,8 @@ class RefundTicketUseCaseImplTest {
 	@Test
 	void refund_whenEventAlreadyStarted() {
 		Ticket ticket = new Ticket(1L, 100L, 10L, 500L, now.minusDays(1), null, TicketStatus.PURCHASED);
-		Event event = new Event(10L, "테스트 이벤트", "테스트 설명", "테스트 이미지", now.minusDays(1), now.minusHours(1), 100, 100L);
+		Event event = new Event(10L, "테스트 이벤트", "테스트 설명", "테스트 이미지", now.minusDays(1), now.minusHours(1), 100, 1000L,
+			100L);
 
 		when(ticketRepositoryPort.findById(1L)).thenReturn(Optional.of(ticket));
 		when(eventRepositoryPort.findById(10L)).thenReturn(Optional.of(event));

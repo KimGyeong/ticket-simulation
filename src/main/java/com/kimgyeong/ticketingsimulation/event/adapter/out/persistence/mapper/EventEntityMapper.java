@@ -13,6 +13,7 @@ public class EventEntityMapper {
 			event.ticketingStartAt(),
 			event.eventStartAt(),
 			event.maxAttendees(),
+			event.virtualRequestCount(),
 			event.userId()
 		);
 	}
@@ -26,6 +27,7 @@ public class EventEntityMapper {
 			entity.getTicketingStartAt(),
 			entity.getEventStartAt(),
 			entity.getMaxAttendees(),
+			entity.getVirtualRequestCount(),
 			entity.getUserId()
 		);
 	}

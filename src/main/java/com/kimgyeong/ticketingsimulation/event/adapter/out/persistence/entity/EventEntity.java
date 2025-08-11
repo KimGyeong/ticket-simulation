@@ -36,5 +36,7 @@ public class EventEntity extends BaseTimeEntity {
 
 	private Integer maxAttendees;
 
+	private Long virtualRequestCount;
+
 	private Long userId;
 }

@@ -54,6 +54,7 @@ class EventControllerTest extends AbstractControllerTest {
 			"https://image.com/poster.jpg",
 			LocalDateTime.of(2025, 8, 1, 18, 0),
 			LocalDateTime.of(2025, 8, 2, 20, 0),
+			1000L,
 			100
 		);
 
@@ -73,6 +74,7 @@ class EventControllerTest extends AbstractControllerTest {
 			"",
 			LocalDateTime.of(2025, 8, 1, 18, 0),
 			LocalDateTime.of(2025, 8, 2, 20, 0),
+			1000L,
 			0
 		);
 
@@ -87,7 +89,7 @@ class EventControllerTest extends AbstractControllerTest {
 	@WithMockCustomUser
 	void findAllEvent_validRequest_returns200() throws Exception {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(1), 100, 1L);
+			LocalDateTime.now().plusDays(1), 100, 1000L, 1L);
 		when(readAllEventUseCase.findAll()).thenReturn(List.of(event));
 
 		mockMvc.perform(get("/api/events")
@@ -103,7 +105,7 @@ class EventControllerTest extends AbstractControllerTest {
 	@WithMockCustomUser
 	void findEventById_validRequest_returns200() throws Exception {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(1), 100, 1L);
+			LocalDateTime.now().plusDays(1), 100, 1000L, 1L);
 		EventDetailResult result = new EventDetailResult(event, 5L);
 		when(readEventUseCase.findById(anyLong())).thenReturn(result);
 
@@ -119,11 +121,10 @@ class EventControllerTest extends AbstractControllerTest {
 	@WithMockCustomUser
 	void updateEvent_validRequest_returns200() throws Exception {
 		UpdateEventRequest updateEventRequest = new UpdateEventRequest("변경 테스트", "변경 설명", "변경 이미지",
-			LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(1), 100);
+			LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(1), 1000L, 100);
 
 		Event result = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(1), 100, 1L);
+			LocalDateTime.now().plusDays(1), 100, 1000L, 1L);
 
 		when(updateEventUseCase.updateEvent(anyLong(), anyLong(), any())).thenReturn(result);
 

@@ -10,6 +10,7 @@ public record Event(
 	LocalDateTime ticketingStartAt,
 	LocalDateTime eventStartAt,
 	int maxAttendees,
+	Long virtualRequestCount,
 	Long userId
 ) {
 	public boolean isTicketingOpen(LocalDateTime now) {
@@ -30,6 +31,7 @@ public record Event(
 		String imageUrl,
 		LocalDateTime ticketingStartAt,
 		LocalDateTime eventStartAt,
+		Long virtualRequestCount,
 		int maxAttendees
 	) {
 		return new Event(
@@ -40,6 +42,7 @@ public record Event(
 			ticketingStartAt,
 			eventStartAt,
 			maxAttendees,
+			virtualRequestCount,
 			this.userId
 		);
 	}

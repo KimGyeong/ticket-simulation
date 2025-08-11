@@ -26,10 +26,11 @@ class EventPersistenceAdapterTest {
 	private EventPersistenceAdapter adapter;
 
 	private final Event event = new Event(null, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
-		LocalDateTime.now().plusDays(2), 100, 1L);
+		LocalDateTime.now().plusDays(2), 100, 1000L, 1L);
 
-	private final EventEntity entity = new EventEntity(1L, "이벤트 이름", "이벤트 설명", "이벤트이미지", LocalDateTime.now().plusDays(1),
-		LocalDateTime.now().plusDays(2), 100, 1L);
+	private final EventEntity entity = new EventEntity(1L, "이벤트 이름", "이벤트 설명", "이벤트이미지",
+		LocalDateTime.now().plusDays(1),
+		LocalDateTime.now().plusDays(2), 100, 1000L, 1L);
 
 	@Test
 	void save() {

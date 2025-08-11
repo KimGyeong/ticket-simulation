@@ -41,9 +41,9 @@ class GrantQueueAccessSchedulerTest {
 	@Test
 	void grantQueueAccess() {
 		Event event1 = new Event(1L, "Concert A", "Description", "Image URL", LocalDateTime.now().minusMinutes(1),
-			LocalDateTime.now().plusMinutes(10), 1000, 1L);
+			LocalDateTime.now().plusMinutes(10), 1000, 100000L, 1L);
 		Event event2 = new Event(2L, "Concert B", "Description", "Image URL", LocalDateTime.now().minusMinutes(2),
-			LocalDateTime.now().plusMinutes(8), 1000, 1L);
+			LocalDateTime.now().plusMinutes(8), 1000, 100000L, 1L);
 
 		when(eventRepositoryPort.findEventsInTicketingPeriod(any(LocalDateTime.class)))
 			.thenReturn(List.of(event1, event2));
@@ -83,7 +83,7 @@ class GrantQueueAccessSchedulerTest {
 	@Test
 	void grantQueueAccess_whenEnterQueueEmpty() {
 		Event event = new Event(1L, "Concert A", "Description", "Image URL", LocalDateTime.now().minusMinutes(1),
-			LocalDateTime.now().plusMinutes(10), 1000, 1L);
+			LocalDateTime.now().plusMinutes(10), 1000, 10000L, 1L);
 		given(eventRepositoryPort.findEventsInTicketingPeriod(any(LocalDateTime.class))).willReturn(List.of(event));
 		given(queueRepositoryPort.getTopEntries(event.id(), 1000)).willReturn(List.of());
 
@@ -95,7 +95,7 @@ class GrantQueueAccessSchedulerTest {
 	@Test
 	void grantQueueAccess_whenAccessQueueFull() {
 		Event event = new Event(1L, "Concert A", "Description", "Image URL", LocalDateTime.now().minusMinutes(1),
-			LocalDateTime.now().plusMinutes(10), 1000, 1L);
+			LocalDateTime.now().plusMinutes(10), 1000, 10000L, 1L);
 		given(eventRepositoryPort.findEventsInTicketingPeriod(any(LocalDateTime.class))).willReturn(List.of(event));
 		given(queueRepositoryPort.countGrantedUsers(anyLong())).willReturn(1000);
 

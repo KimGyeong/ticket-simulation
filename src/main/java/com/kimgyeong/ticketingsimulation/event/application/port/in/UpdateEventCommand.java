@@ -8,6 +8,7 @@ public record UpdateEventCommand(
 	String imageUrl,
 	LocalDateTime ticketingStartAt,
 	LocalDateTime eventStartAt,
+	Long virtualRequestCount,
 	int maxAttendees
 ) {
 }

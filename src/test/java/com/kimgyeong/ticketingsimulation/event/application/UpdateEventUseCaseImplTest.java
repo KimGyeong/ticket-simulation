@@ -30,13 +30,13 @@ class UpdateEventUseCaseImplTest {
 	@Test
 	void update() {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(1), 100, 1L);
+			LocalDateTime.now().plusDays(1), 100, 1000L, 1L);
 
 		given(port.findById(anyLong())).willReturn(Optional.of(event));
 		given(port.save(any(Event.class))).willAnswer(invocation -> invocation.getArgument(0));
 
 		UpdateEventCommand updateEventCommand = new UpdateEventCommand("변경 테스트", "변경 설명", "테스트 이미지",
-			LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(1), 100);
+			LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(1), 1000L, 100);
 
 		Event result = useCase.updateEvent(1L, 1L, updateEventCommand);
 
@@ -48,12 +48,12 @@ class UpdateEventUseCaseImplTest {
 	@Test
 	void update_whenUserIsNotOwner() {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().plusDays(1),
-			LocalDateTime.now().plusDays(1), 100, 1L);
+			LocalDateTime.now().plusDays(1), 100, 1000L, 1L);
 
 		given(port.findById(anyLong())).willReturn(Optional.of(event));
 
 		UpdateEventCommand updateEventCommand = new UpdateEventCommand("변경 테스트", "변경 설명", "테스트 이미지",
-			LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(1), 100);
+			LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(1), 1000L, 100);
 
 		assertThatThrownBy(() -> useCase.updateEvent(2L, 1L, updateEventCommand))
 			.isInstanceOf(EventAccessDeniedException.class);
@@ -62,12 +62,12 @@ class UpdateEventUseCaseImplTest {
 	@Test
 	void update_whenTimeAfterTicketingOpen() {
 		Event event = new Event(1L, "테스트 이벤트", "테스트 설명", "테스트 이미지", LocalDateTime.now().minusMinutes(10),
-			LocalDateTime.now().plusDays(1), 100, 1L);
+			LocalDateTime.now().plusDays(1), 100, 1000L, 1L);
 
 		given(port.findById(anyLong())).willReturn(Optional.of(event));
 
 		UpdateEventCommand updateEventCommand = new UpdateEventCommand("변경 테스트", "변경 설명", "테스트 이미지",
-			LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(1), 100);
+			LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(1), 1000L, 100);
 
 		assertThatThrownBy(() -> useCase.updateEvent(1L, 1L, updateEventCommand))
 			.isInstanceOf(EventModificationTimeExpiredException.class);

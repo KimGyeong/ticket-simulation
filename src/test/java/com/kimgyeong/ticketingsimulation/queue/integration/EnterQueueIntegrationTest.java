@@ -41,6 +41,7 @@ class EnterQueueIntegrationTest extends IntegrationTestContainers {
 			"https://image.com/test.jpg",
 			LocalDateTime.now().minusMinutes(10),
 			LocalDateTime.now().plusMinutes(10),
+			1000,
 			5
 		);
 

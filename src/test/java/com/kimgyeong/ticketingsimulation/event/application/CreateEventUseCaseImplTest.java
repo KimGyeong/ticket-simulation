@@ -40,6 +40,7 @@ class CreateEventUseCaseImplTest {
 			"테스트 이미지",
 			LocalDateTime.of(2025, 8, 1, 18, 0),
 			LocalDateTime.of(2025, 8, 2, 20, 0),
+			1000L,
 			3
 		);
 
@@ -51,6 +52,7 @@ class CreateEventUseCaseImplTest {
 			command.ticketingStartAt(),
 			command.eventStartAt(),
 			command.maxAttendees(),
+			command.virtualRequestCount(),
 			1L
 		);
 

@@ -41,6 +41,7 @@ public class UpdateEventUseCaseImpl implements UpdateEventUseCase {
 			updateEventCommand.imageUrl(),
 			updateEventCommand.ticketingStartAt(),
 			updateEventCommand.eventStartAt(),
+			updateEventCommand.virtualRequestCount(),
 			updateEventCommand.maxAttendees()
 		);
 

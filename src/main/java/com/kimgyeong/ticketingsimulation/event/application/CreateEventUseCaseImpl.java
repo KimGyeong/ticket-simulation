@@ -33,6 +33,7 @@ public class CreateEventUseCaseImpl implements CreateEventUseCase {
 			command.ticketingStartAt(),
 			command.eventStartAt(),
 			command.maxAttendees(),
+			command.virtualRequestCount(),
 			userId
 		);
 		Event savedEvent = eventRepositoryPort.save(event);
