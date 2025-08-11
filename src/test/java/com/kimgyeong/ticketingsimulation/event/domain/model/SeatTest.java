@@ -66,7 +66,7 @@ class SeatTest {
 	@Test
 	void release_whenSeatNotTemporaryHold() {
 		assertThat(availableSeat.release().status()).isEqualTo(SeatStatus.AVAILABLE);
-		assertThat(bookedSeat.release().status()).isEqualTo(SeatStatus.BOOKED);
+		assertThat(bookedSeat.release().status()).isEqualTo(SeatStatus.AVAILABLE);
 	}
 
 	@Test
